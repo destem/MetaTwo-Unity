@@ -14,3 +14,5 @@ public static class Settings{
     public static int sessionTime = 300; // total time, in seconds, for this experimental session. 1 hour = 3600 seconds
     public static int seed = -1; // seed for RNG. -1 means use the current time
 }
+
+//second git test
