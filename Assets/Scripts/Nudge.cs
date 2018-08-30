@@ -9,6 +9,8 @@ public class Nudge : MonoBehaviour {
 		
 	}
 	
+    // this comment exists solely as a test to determine whether I've got git working back and forth between the CogWorks laptop and my (Marc's) Macbook
+
 	// Update is called once per frame
 	void Update () {
         if (Input.GetButtonDown("Right")){
