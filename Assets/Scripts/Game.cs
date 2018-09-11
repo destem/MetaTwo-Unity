@@ -109,7 +109,10 @@ public class Game : MonoBehaviour {
         cam = Camera.main;
         log = GetComponent<Log>();
         log.game = this;
-        Reset(); // create boards
+        //Reset(); // create boards
+        board = new Board();
+        dummyboard = new Board();
+
 
         soundSystem = GetComponent<AudioSource>();
         renderedSprites = new GameObject[board.boardHeight, board.boardWidth];
@@ -490,6 +493,7 @@ public class Game : MonoBehaviour {
                 //logGameSumm();
                 //state.start(MetaTWO.GameOver.stateKey);
                 writer.Close();
+                GameObject.Find("StartCanvas").GetComponent<StartGame>().BackToMenu();
             }
         }
 
@@ -822,6 +826,25 @@ public class Game : MonoBehaviour {
         else { return false; }
     }
 
+    public void ClearBoard(){
+        for (int j = 0; j < board.boardHeight; j++)
+        {
+            for (int i = 0; i < board.boardWidth; i++)
+            {
+                spriteRenderers[j, i].color = Color.black;
+                spriteRenderers[j, i].enabled = false;
+            }
+        }
+        for (int i = 0; i < 14; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                nextRenderers[i, j].color = Color.black;
+                nextRenderers[i, j].enabled = false;
+            }
+        }
+        paused = true;
+    }
 
     private void RenderBoard()
     {
@@ -948,7 +971,7 @@ public class Game : MonoBehaviour {
                     spriteRenderers[j, i].color = Color.black;
                 }
             }
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 14; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
