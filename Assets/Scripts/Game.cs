@@ -97,15 +97,11 @@ public class Game : MonoBehaviour {
     public int gameNumber = 1;
     List<int> rowsToClear = new List<int>();
     Log log;
+    StreamWriter writer;
 
 
     private void Awake()
     {
-        //print(Application.persistentDataPath);
-        //StreamWriter writer = new StreamWriter(Application.persistentDataPath + "/yo.txt", true);
-        //writer.WriteLine("Test");
-        //writer.Close();
-
         Application.targetFrameRate = 60;
         // either seed with fixed num from settings or the first four digits after the decimal point of the current time
         Random.InitState(Settings.randomSeed > 0? Settings.randomSeed : (int)((Time.time - (int)Time.time) * 1000));
@@ -179,6 +175,11 @@ public class Game : MonoBehaviour {
 
     // Use this for initialization
     public void Reset () {
+        print(Application.persistentDataPath);
+        System.DateTime timestamp = System.DateTime.Now;
+        writer = new StreamWriter(Application.persistentDataPath + "/" + string.Format("{0}_{1}", Settings.subjectNumber, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + ".txt", true);
+        writer.WriteLine("Test");
+        writer.Close();
         board = new Board();
         dummyboard = new Board();
         frames = 0;

@@ -6,7 +6,7 @@ public static class Settings{
 
     public static int numPreviewZoids = 5;
     public static int randomSeed = 0;
-    public static int subjectNumber = 0;
+    public static int subjectNumber = 1234;
     public static int ECID = 0;
     public static string session = "";
     public static int startLevel = 0;
