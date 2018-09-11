@@ -17,12 +17,13 @@ public class Log : MonoBehaviour {
         "initial_lat","drop_lat","avg_lat",
         "tetrises_game","tetrises_level",
          "agree","delaying","dropping","zoid_rot","zoid_col","zoid_row","board_rep","zoid_rep" };
-    string logHeader;
+    public string logHeader;
     string[] loglist;
     public Game game;
 
     public void Awake(){
         logHeader = string.Join("\t", logHeaderArray);
+
     }
 
 
@@ -112,7 +113,9 @@ public class Log : MonoBehaviour {
         logit(PrettyPrint2DArray(game.zoid.ZoidRep()), "zoid_rep");
 
         masterLog += string.Join("\t", data.ToArray()) + "\n";
-        print(masterLog);
+        //print(masterLog);
+        game.writer.WriteLine(masterLog);
+        game.writer.Flush();
     }
 
     public void LogWorld()

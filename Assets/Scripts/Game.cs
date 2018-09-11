@@ -97,7 +97,7 @@ public class Game : MonoBehaviour {
     public int gameNumber = 1;
     List<int> rowsToClear = new List<int>();
     Log log;
-    StreamWriter writer;
+    public StreamWriter writer;
 
 
     private void Awake()
@@ -105,10 +105,10 @@ public class Game : MonoBehaviour {
         Application.targetFrameRate = 60;
         // either seed with fixed num from settings or the first four digits after the decimal point of the current time
         Random.InitState(Settings.randomSeed > 0? Settings.randomSeed : (int)((Time.time - (int)Time.time) * 1000));
-        // PLAY MUSIC
-        // logEvent("GAME", "BEGIN");
         softdrop_timer = -GRAVITY_START_DELAY;
         cam = Camera.main;
+        log = GetComponent<Log>();
+        log.game = this;
         Reset(); // create boards
 
         soundSystem = GetComponent<AudioSource>();
@@ -169,8 +169,7 @@ public class Game : MonoBehaviour {
             nextLine.SetPosition(2, new Vector3(pos2.x, pos2.y - (2.3f * board.spacing * Settings.numPreviewZoids), pos2.z));
             nextLine.SetPosition(3, new Vector3(pos3.x, pos3.y - (2.3f * board.spacing * Settings.numPreviewZoids), pos3.z));
         }
-        log = GetComponent<Log>();
-        log.game = this;
+
     }
 
     // Use this for initialization
@@ -178,8 +177,8 @@ public class Game : MonoBehaviour {
         print(Application.persistentDataPath);
         System.DateTime timestamp = System.DateTime.Now;
         writer = new StreamWriter(Application.persistentDataPath + "/" + string.Format("{0}_{1}", Settings.subjectNumber, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + ".txt", true);
-        writer.WriteLine("Test");
-        writer.Close();
+        //writer.WriteLine("Test");
+        writer.WriteLine(log.logHeader);
         board = new Board();
         dummyboard = new Board();
         frames = 0;
@@ -253,6 +252,7 @@ public class Game : MonoBehaviour {
         //    debugNames += Zoid.names[previewZoidQueue.ElementAt<Zoid>(i).zoidType].ToString();
         //}
         //print(debugNames);
+        log.LogEvent("GAME", "BEGIN", "");
 
         musicSystem.clip = clips[(int)soundEnum.music];
         musicSystem.Play();
@@ -489,6 +489,7 @@ public class Game : MonoBehaviour {
                 //// LOG END-OF-GAME INFO
                 //logGameSumm();
                 //state.start(MetaTWO.GameOver.stateKey);
+                writer.Close();
             }
         }
 
