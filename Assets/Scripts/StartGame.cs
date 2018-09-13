@@ -18,27 +18,6 @@ public class StartGame : MonoBehaviour
         canvas = GetComponent<Canvas>();
     }
 
-    /*
-    if (MetaTWO.gamepad.isDown(Phaser.Gamepad.BUTTON_0)){
-    // assuming a Tomee converted gamepad
-    MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_0;
-    MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_1;
-    MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_5;
-    MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
-    MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_4;
-    MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
-
-}
-  if (MetaTWO.gamepad.isDown(Phaser.Gamepad.BUTTON_1)){
-    // assuming NES-Retro gamepad
-    MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_1;
-    MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_0;
-    MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_4;
-    MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
-    MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_5;
-    MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
-  }
-*/
 
     // Update is called once per frame
     void Update()
@@ -47,6 +26,27 @@ public class StartGame : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Return))
             {
+                comp.useKeyboard = true;
+                comp.useTomee = false;
+                comp.useRetro = false;
+                LaunchGame();
+            }
+            if (Input.GetKeyDown("joystick button 0"))
+            {
+                //Assuming Tomee converted gamepad
+                print("Tomee");
+                comp.useKeyboard = false;
+                comp.useTomee = true;
+                comp.useRetro = false;
+                LaunchGame();
+            }
+            if (Input.GetKeyDown("joystick button 1"))
+            {
+                //Assuming NES-Retro  gamepad
+                print("Retro");
+                comp.useKeyboard = false;
+                comp.useTomee = false;
+                comp.useRetro = true;
                 LaunchGame();
             }
         }
