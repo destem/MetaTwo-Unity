@@ -179,8 +179,7 @@ public class Game : MonoBehaviour {
     public void Reset () {
         print(Application.persistentDataPath);
         System.DateTime timestamp = System.DateTime.Now;
-        writer = new StreamWriter(Application.persistentDataPath + "/" + string.Format("{0}_{1}", Settings.subjectNumber, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + ".txt", true);
-        //writer.WriteLine("Test");
+        writer = new StreamWriter(Application.persistentDataPath + "/" + string.Format("{0}_{1}", Settings.subjectNumber, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + ".tsv", true);
         writer.WriteLine(log.logHeader);
         board = new Board();
         dummyboard = new Board();
@@ -303,10 +302,10 @@ public class Game : MonoBehaviour {
             //    print(subscriber.Method.Name);
             //}
             frames++;
-            //logWorld();
+            log.LogWorld();
         }
         RenderBoard();
-        if (Input.GetKeyDown(KeyCode.Q)) log.LogWorld();
+        //if (Input.GetKeyDown(KeyCode.Q)) log.LogWorld();
 	}
 
   // Possibly the most delicate and important function in the game, translating user input into game commands.
@@ -408,7 +407,7 @@ public class Game : MonoBehaviour {
                 if (!zoid.Collide(board, vx, 0, 0))
                 {
                     zoid.x += vx;
-                    //logEvent("ZOID", "TRANSLATE", vx.toString());
+                    log.LogEvent("ZOID", "TRANSLATE", vx.ToString()); 
                     soundSystem.PlayOneShot(clips[(int)soundEnum.move], 1f);
                 }
                 else
@@ -426,7 +425,7 @@ public class Game : MonoBehaviour {
             {
                 soundSystem.PlayOneShot(clips[(int)soundEnum.rotate], 1f);
 
-                //logEvent("ZOID", "ROTATE", vr.toString());
+                log.LogEvent("ZOID", "ROTATE", vr.ToString());
 
                 zoid.r += vr;
                 zoid.r = zoid.r & 3;
@@ -442,8 +441,8 @@ public class Game : MonoBehaviour {
         }
         if ((vy != 0) || (drop >= speedLevels[level < 29 ? level : 29]))
         {
-            //if (vy != 0) { logEvent("ZOID", "U-DOWN", ""); }
-            //else { logEvent("ZOID", "DOWN", ""); }
+            if (vy != 0) { log.LogEvent("ZOID", "U-DOWN", ""); }
+            else { log.LogEvent("ZOID", "DOWN", ""); }
             vy = 0;
             drop = 0;
             if (!zoid.Collide(board, 0, 1, 0))
@@ -455,12 +454,12 @@ public class Game : MonoBehaviour {
                 // we're playing the "lock" sound now, but technically the piece doesn't commit until the next frame (in updateTask)
                 Sub_9caf();
                 currentTask = UpdateTask;
-                //logEvent("PLACED", zoid.names[curr], "");
+                log.LogEvent("PLACED", Zoid.names[curr].ToString(), "");
                 if (drop_points >= 2)
                 {
                     soundSystem.PlayOneShot(clips[(int)soundEnum.slam], 1f);
 
-                    //logEvent("ZOID", "SLAMMED", "");
+                    log.LogEvent("ZOID", "SLAMMED", "");
                 }
                 else
                 {
@@ -490,8 +489,7 @@ public class Game : MonoBehaviour {
                 soundSystem.PlayOneShot(clips[(int)soundEnum.crash], 1f);
 
                 //// LOG END-OF-GAME INFO
-                //logGameSumm();
-                //state.start(MetaTWO.GameOver.stateKey);
+                log.LogGameSumm();
                 writer.Close();
                 GameObject.Find("StartCanvas").GetComponent<StartGame>().BackToMenu();
             }
@@ -612,8 +610,8 @@ public class Game : MonoBehaviour {
             musicSystem.Play();
         }
         // LOG EPISODE info
-        //logEpisode();
-        //logEvent("EPISODE", "END", "");
+        log.LogEpisode();
+        log.LogEvent("EPISODE", "END", "");
         currentTask = GoalCheck;
     }
 
@@ -658,8 +656,8 @@ public class Game : MonoBehaviour {
         //print(debugNames);
 
         zoidBuff.Add(Zoid.names[curr].ToString());
-        //logEvent("ZOID", "NEW", zoid.names[curr]);
-        //logEvent("EPISODE", "BEGIN", "");
+        log.LogEvent("ZOID", "NEW", Zoid.names[curr].ToString());
+        log.LogEvent("EPISODE", "BEGIN", "");
         currentTask = Active;
     }
 

@@ -17,6 +17,29 @@ public class Log : MonoBehaviour {
         "initial_lat","drop_lat","avg_lat",
         "tetrises_game","tetrises_level",
          "agree","delaying","dropping","zoid_rot","zoid_col","zoid_row","board_rep","zoid_rep" };
+    string[] gameStateList = { "SID","ECID","session","game_type","game_number","episode_number",
+    "level","score","lines_cleared","danger_mode",
+    "delaying","dropping","curr_zoid","next_zoid",
+    "zoid_rot","zoid_col","zoid_row","board_rep","zoid_rep" };
+    string[] episodeList = { "SID","ECID","session","game_type","game_number","episode_number",
+      "level","score","lines_cleared",
+      "curr_zoid","next_zoid","danger_mode",
+      "zoid_rot","zoid_col","zoid_row",
+      "board_rep","zoid_rep","evt_sequence","rots","trans","path_length",
+      "min_rots","min_trans","min_path",
+      "min_rots_diff","min_trans_diff","min_path_diff",
+      "u_drops","s_drops","prop_u_drops",
+      "initial_lat","drop_lat","avg_lat",
+      "tetrises_game","tetrises_level",
+      "agree" };
+    string[] eventList = { "SID","ECID","session","game_type","game_number","episode_number",
+      "level","score","lines_cleared",
+      "curr_zoid","next_zoid","danger_mode",
+      "delaying","dropping",
+      "zoid_rot","zoid_col","zoid_row" };
+    string[] summList = { "SID","ECID","session","game_type","game_number","episode_number",
+    "level","score","lines_cleared","completed",
+    "game_duration","avg_ep_duration","zoid_sequence" };
     public string logHeader;
     string[] loglist;
     public Game game;
@@ -112,53 +135,38 @@ public class Log : MonoBehaviour {
         logit(PrettyPrint2DArray(game.board.contents), "board_rep");
         logit(PrettyPrint2DArray(game.zoid.ZoidRep()), "zoid_rep");
 
-        masterLog += string.Join("\t", data.ToArray()) + "\n";
+        //masterLog += string.Join("\t", data.ToArray());// + "\n";
         //print(masterLog);
-        game.writer.WriteLine(masterLog);
-        game.writer.Flush();
+        game.writer.WriteLine(string.Join("\t", data.ToArray()));
+
     }
 
     public void LogWorld()
     {
-        loglist = new string[] { "SID","ECID","session","game_type","game_number","episode_number",
-    "level","score","lines_cleared","danger_mode",
-    "delaying","dropping","curr_zoid","next_zoid",
-    "zoid_rot","zoid_col","zoid_row","board_rep","zoid_rep" };
+        loglist = gameStateList;
         LogUniversal("GAME_STATE");
+        // not flushing here to save performance
     }
 
     public void LogEpisode()
     {
-        loglist = new string[] { "SID","ECID","session","game_type","game_number","episode_number",
-      "level","score","lines_cleared",
-      "curr_zoid","next_zoid","danger_mode",
-      "zoid_rot","zoid_col","zoid_row",
-      "board_rep","zoid_rep","evt_sequence","rots","trans","path_length",
-      "min_rots","min_trans","min_path",
-      "min_rots_diff","min_trans_diff","min_path_diff",
-      "u_drops","s_drops","prop_u_drops",
-      "initial_lat","drop_lat","avg_lat",
-      "tetrises_game","tetrises_level",
-      "agree" };
+        loglist = episodeList; 
         LogUniversal("EP_SUMM");
+        game.writer.Flush();
     }
 
     public void LogGameSumm()
     {
-        loglist = new string[] { "SID","ECID","session","game_type","game_number","episode_number",
-    "level","score","lines_cleared","completed",
-    "game_duration","avg_ep_duration","zoid_sequence" };
+        loglist = summList;
         LogUniversal("GAME_SUMM");
+        game.writer.Flush();
     }
 
     public void LogEvent(string id, string d1, string d2)
     {
-        loglist = new string[] { "SID","ECID","session","game_type","game_number","episode_number",
-      "level","score","lines_cleared",
-      "curr_zoid","next_zoid","danger_mode",
-      "delaying","dropping",
-      "zoid_rot","zoid_col","zoid_row" };
+        loglist = eventList;
         LogUniversal("GAME_EVENT", false, id, d1, d2);
+        game.writer.Flush();
     }
 
 }
