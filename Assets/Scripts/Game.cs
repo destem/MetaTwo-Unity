@@ -78,6 +78,9 @@ public class Game : MonoBehaviour {
     public int curr = 0;
     public int next = 0;
 
+    public bool useKeyboard = true;
+    public bool useTomee = false;
+    public bool useRetro = false;
     int piece_count = 0;
     bool leftCurr = false;
     bool leftPrev = false;
@@ -752,13 +755,53 @@ public class Game : MonoBehaviour {
         pausePrev = pauseCurr;
         invertPrev = invertCurr;
 
-        leftCurr = Input.GetButton("Left");
-        rightCurr = Input.GetButton("Right");
-        downCurr = Input.GetButton("Down");
-        rotateCurr = Input.GetButton("Rotate");
-        counterRotateCurr = Input.GetButton("Counterrotate");
-        pauseCurr = Input.GetButton("Pause");
-        invertCurr = Input.GetButton("Invert");
+        if (useKeyboard){
+            leftCurr = Input.GetButton("Left");
+            rightCurr = Input.GetButton("Right");
+            downCurr = Input.GetButton("Down");
+            rotateCurr = Input.GetButton("Rotate");
+            counterRotateCurr = Input.GetButton("Counterrotate");
+            pauseCurr = Input.GetButton("Pause");
+            invertCurr = Input.GetButton("Invert");
+        }
+        /*
+        Tomee converted gamepad
+        MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_0;
+        MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_1;
+        MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_5;
+        MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
+        MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_4;
+        MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
+        */
+        else if (useTomee){
+            leftCurr = Input.GetKey("joystick button 5");
+            rightCurr = Input.GetKey("joystick button 6");
+            downCurr = Input.GetKey("joystick button 4");
+            rotateCurr = Input.GetKey("joystick button 0");
+            counterRotateCurr = Input.GetKey("joystick button 1");
+            pauseCurr = Input.GetKey("joystick button 3");
+            invertCurr = Input.GetButton("Invert");
+        }
+        /*
+        NES-Retro gamepad
+        MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_1;
+        MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_0;
+        MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_4;
+        MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
+        MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_5;
+        MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
+        }
+        */
+        else{
+            leftCurr = Input.GetKey("joystick button 4");
+            rightCurr = Input.GetKey("joystick button 6");
+            downCurr = Input.GetKey("joystick button 5");
+            rotateCurr = Input.GetKey("joystick button 1");
+            counterRotateCurr = Input.GetKey("joystick button 0");
+            pauseCurr = Input.GetKey("joystick button 3");
+            invertCurr = Input.GetButton("Invert");
+        }
+
     }
 
     int PileHeight(){

@@ -9,6 +9,7 @@ public class StartGame : MonoBehaviour
     public GameObject game;
     Game comp;
     Canvas canvas;
+    bool acceptInput = true;
 
     // Use this for initialization
     void Start()
@@ -17,10 +18,38 @@ public class StartGame : MonoBehaviour
         canvas = GetComponent<Canvas>();
     }
 
+
     // Update is called once per frame
     void Update()
     {
-        
+        if (acceptInput)
+        {
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                comp.useKeyboard = true;
+                comp.useTomee = false;
+                comp.useRetro = false;
+                LaunchGame();
+            }
+            if (Input.GetKeyDown("joystick button 0"))
+            {
+                //Assuming Tomee converted gamepad
+                print("Tomee");
+                comp.useKeyboard = false;
+                comp.useTomee = true;
+                comp.useRetro = false;
+                LaunchGame();
+            }
+            if (Input.GetKeyDown("joystick button 1"))
+            {
+                //Assuming NES-Retro  gamepad
+                print("Retro");
+                comp.useKeyboard = false;
+                comp.useTomee = false;
+                comp.useRetro = true;
+                LaunchGame();
+            }
+        }
     }
 
     /*
@@ -52,6 +81,7 @@ public class StartGame : MonoBehaviour
         level = Mathf.Clamp(level, 0, 29);
         //print(level);
         //gameObject.SetActive(false);
+        acceptInput = false;
         canvas.enabled = false;
         game.SetActive(true);
 
@@ -62,6 +92,7 @@ public class StartGame : MonoBehaviour
 
     public void BackToMenu()
     {
+        acceptInput = true;
         //gameObject.SetActive(true);
         canvas.enabled = true;
         comp.ClearBoard();
