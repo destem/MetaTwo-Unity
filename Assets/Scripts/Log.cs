@@ -159,7 +159,7 @@ public class Log : MonoBehaviour {
     {
         loglist = summList;
         LogUniversal("GAME_SUMM");
-        game.writer.Flush();
+        game.writer.Close();
     }
 
     public void LogEvent(string id, string d1, string d2)
