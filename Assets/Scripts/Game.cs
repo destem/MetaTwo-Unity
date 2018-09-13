@@ -305,7 +305,6 @@ public class Game : MonoBehaviour {
             log.LogWorld();
         }
         RenderBoard();
-        //if (Input.GetKeyDown(KeyCode.Q)) log.LogWorld();
 	}
 
   // Possibly the most delicate and important function in the game, translating user input into game commands.
