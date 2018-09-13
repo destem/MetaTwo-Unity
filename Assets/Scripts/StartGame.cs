@@ -52,6 +52,29 @@ public class StartGame : MonoBehaviour
         }
     }
 
+    /*
+     * if (MetaTWO.gamepad.isDown(Phaser.Gamepad.BUTTON_0)){
+    // assuming a Tomee converted gamepad
+    MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_0;
+    MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_1;
+    MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_5;
+    MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
+    MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_4;
+    MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
+    this.gotoNextScreen();
+  }
+  if (MetaTWO.gamepad.isDown(Phaser.Gamepad.BUTTON_1)){
+    // assuming NES-Retro gamepad
+    MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_1;
+    MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_0;
+    MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_4;
+    MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
+    MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_5;
+    MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
+    this.gotoNextScreen();
+  }
+     */
+
     public void LaunchGame()
     {
         int level = System.Int32.Parse(transform.Find("InputField").gameObject.GetComponent<UnityEngine.UI.InputField>().text);
