@@ -1,15 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
+using System.Net.Sockets;
+using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 public class StartGame : MonoBehaviour
 {
-
+    
     public GameObject gameCanvas;
     public GameObject game;
     Game comp;
     Canvas canvas;
     bool acceptInput = true;
+
+    TcpClient socket;
+    NetworkStream stream;
+    StreamWriter writer;
+    StreamReader reader;
+    bool socketReady = false;
 
     // Use this for initialization
     void Start()
@@ -49,6 +60,11 @@ public class StartGame : MonoBehaviour
                 comp.useRetro = true;
                 LaunchGame();
             }
+        }
+        if (socketReady && stream.DataAvailable)
+        {
+            string data = reader.ReadLine();
+            print("Server says: " + data);
         }
     }
 
@@ -98,5 +114,24 @@ public class StartGame : MonoBehaviour
         comp.ClearBoard();
         //game.SetActive(false);
         gameCanvas.SetActive(false);
+    }
+
+    public void ConnectToEyetrackerAndCalibrate()
+    {
+        socketReady = true;
+        socket = new TcpClient("127.0.0.1", 4242);
+        stream = socket.GetStream();
+        writer = new StreamWriter(stream);
+        reader = new StreamReader(stream);
+
+        writer.Write("<SET ID=\"ENABLE_SEND_TIME\" STATE=\"1\" />\r\n");
+        writer.Write("<SET ID=\"ENABLE_SEND_POG_FIX\" STATE=\"1\" />\r\n");
+        writer.Write("<SET ID=\"ENABLE_SEND_CURSOR\" STATE=\"1\" />\r\n");
+        writer.Write("<SET ID=\"ENABLE_SEND_DATA\" STATE=\"1\" />\r\n");
+
+        writer.Write("<SET ID=\"CALIBRATE SHOW\" VALUE=\"1\" />\r\n");
+        writer.Flush();
+        writer.Write("<SET ID=\"CALIBRATE START\" VALUE=\"1\" />\r\n");
+        writer.Flush();
     }
 }
