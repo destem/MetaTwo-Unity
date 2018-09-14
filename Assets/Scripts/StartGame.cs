@@ -129,9 +129,9 @@ public class StartGame : MonoBehaviour
         writer.Write("<SET ID=\"ENABLE_SEND_CURSOR\" STATE=\"1\" />\r\n");
         writer.Write("<SET ID=\"ENABLE_SEND_DATA\" STATE=\"1\" />\r\n");
 
-        writer.Write("<SET ID=\"CALIBRATE SHOW\" VALUE=\"1\" />\r\n");
+        writer.Write("<SET ID=\"CALIBRATE_SHOW\" STATE=\"1\" />\r\n");
         writer.Flush();
-        writer.Write("<SET ID=\"CALIBRATE START\" VALUE=\"1\" />\r\n");
+        writer.Write("<SET ID=\"CALIBRATE_START\" STATE=\"1\" />\r\n");
         writer.Flush();
     }
 }
