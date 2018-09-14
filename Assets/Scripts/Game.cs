@@ -180,7 +180,7 @@ public class Game : MonoBehaviour {
 
     // Use this for initialization
     public void Reset () {
-        print(Application.persistentDataPath);
+        //print(Application.persistentDataPath);
         System.DateTime timestamp = System.DateTime.Now;
         writer = new StreamWriter(Application.persistentDataPath + "/" + string.Format("{0}_{1}", Settings.subjectNumber, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + ".tsv", true);
         writer.WriteLine(log.logHeader);
