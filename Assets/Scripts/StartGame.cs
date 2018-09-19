@@ -64,32 +64,12 @@ public class StartGame : MonoBehaviour
         if (socketReady && stream.DataAvailable)
         {
             string data = reader.ReadLine();
+            // EX: Server says: <REC TIME="38.41262" FPOGX="0.41352" FPOGY="0.80682" FPOGS="38.36427" FPOGD="0.04835" FPOGID="93" FPOGV="1" BPOGX="0.43701" BPOGY="0.81848" BPOGV="1" />
             //print("Server says: " + data);
         }
     }
 
-    /*
-     * if (MetaTWO.gamepad.isDown(Phaser.Gamepad.BUTTON_0)){
-    // assuming a Tomee converted gamepad
-    MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_0;
-    MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_1;
-    MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_5;
-    MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
-    MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_4;
-    MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
-    this.gotoNextScreen();
-  }
-  if (MetaTWO.gamepad.isDown(Phaser.Gamepad.BUTTON_1)){
-    // assuming NES-Retro gamepad
-    MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_1;
-    MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_0;
-    MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_4;
-    MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
-    MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_5;
-    MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
-    this.gotoNextScreen();
-  }
-     */
+ 
 
     public void LaunchGame()
     {
@@ -126,7 +106,8 @@ public class StartGame : MonoBehaviour
 
         writer.Write("<SET ID=\"ENABLE_SEND_TIME\" STATE=\"1\" />\r\n");
         writer.Write("<SET ID=\"ENABLE_SEND_POG_FIX\" STATE=\"1\" />\r\n");
-        writer.Write("<SET ID=\"ENABLE_SEND_CURSOR\" STATE=\"1\" />\r\n");
+        writer.Write("<SET ID=\"ENABLE_SEND_POG_BEST\" STATE=\"1\" />\r\n");
+        //writer.Write("<SET ID=\"ENABLE_SEND_CURSOR\" STATE=\"1\" />\r\n");
         writer.Write("<SET ID=\"ENABLE_SEND_DATA\" STATE=\"1\" />\r\n");
 
         writer.Write("<SET ID=\"CALIBRATE_SHOW\" STATE=\"1\" />\r\n");

@@ -16,7 +16,7 @@ public class Log : MonoBehaviour {
         "u_drops","s_drops","prop_u_drops",
         "initial_lat","drop_lat","avg_lat",
         "tetrises_game","tetrises_level",
-         "agree","delaying","dropping","zoid_rot","zoid_col","zoid_row","board_rep","zoid_rep" };
+         "agree","delaying","dropping","zoid_rot","zoid_col","zoid_row","board_rep","zoid_rep", "eye_tracker_time", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY","BPOGV"};
     string[] gameStateList = { "SID","ECID","session","game_type","game_number","episode_number",
     "level","score","lines_cleared","danger_mode",
     "delaying","dropping","curr_zoid","next_zoid",
