@@ -774,9 +774,15 @@ public class Game : MonoBehaviour {
         MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
         */
         else if (useTomee){
-            leftCurr = Input.GetKey("joystick button 5");
-            rightCurr = Input.GetKey("joystick button 6");
-            downCurr = Input.GetKey("joystick button 4");
+            //for (int i =0; i<20; i++)
+            //{
+            //    if (Input.GetKey("joystick button " + i.ToString())) print("button " + i.ToString());
+            //}
+            //print("H " + Input.GetAxis("Horizontal").ToString());
+
+            leftCurr = Input.GetAxis("Horizontal") == -1; // Input.GetKey("joystick button 5");
+            rightCurr = Input.GetAxis("Horizontal") == 1; // Input.GetKey("joystick button 6");
+            downCurr = Input.GetAxis("Vertical") == -1; //Input.GetKey("joystick button 4");
             rotateCurr = Input.GetKey("joystick button 0");
             counterRotateCurr = Input.GetKey("joystick button 1");
             pauseCurr = Input.GetKey("joystick button 3");
