@@ -64,7 +64,7 @@ public class StartGame : MonoBehaviour
         if (socketReady && stream.DataAvailable)
         {
             string data = reader.ReadLine();
-            print("Server says: " + data);
+            //print("Server says: " + data);
         }
     }
 
