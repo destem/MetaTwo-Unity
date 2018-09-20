@@ -99,7 +99,7 @@ public class Game : MonoBehaviour {
     bool fastMusic = false;
     public int gameNumber = 1;
     List<int> rowsToClear = new List<int>();
-    Log log;
+    public Log log;
     public StreamWriter writer;
 
 
