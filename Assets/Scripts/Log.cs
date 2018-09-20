@@ -3,6 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+public class EyetrackLogline
+{
+    public string ETT;
+    public string FPOGX;
+    public string FPOGY;
+    public string FPOGS;
+    public string FPOGD;
+    public string FPOGID;
+    public string FPOGV;
+    public string BPOGX;
+    public string BPOGY;
+    public string BPOGV;
+}
+
 public class Log : MonoBehaviour {
 
     List<string> data = new List<string>();
@@ -40,9 +54,12 @@ public class Log : MonoBehaviour {
     string[] summList = { "SID","ECID","session","game_type","game_number","episode_number",
     "level","score","lines_cleared","completed",
     "game_duration","avg_ep_duration","zoid_sequence" };
+    string[] eyeList = { "eye_tracker_time", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY", "BPOGV" };
     public string logHeader;
     string[] loglist;
     public Game game;
+    public static string eyetrackString;
+    EyetrackLogline eyetrackingLogline = new EyetrackLogline();
 
     public void Awake(){
         logHeader = string.Join("\t", logHeaderArray);
@@ -135,6 +152,17 @@ public class Log : MonoBehaviour {
         logit(PrettyPrint2DArray(game.board.contents), "board_rep");
         logit(PrettyPrint2DArray(game.zoid.ZoidRep()), "zoid_rep");
 
+        logit(eyetrackingLogline.ETT, "eye_tracker_time");
+        logit(eyetrackingLogline.FPOGX, "FPOGX");
+        logit(eyetrackingLogline.FPOGY, "FPOGY");
+        logit(eyetrackingLogline.FPOGS, "FPOGS");
+        logit(eyetrackingLogline.FPOGD, "FPOGD");
+        logit(eyetrackingLogline.FPOGID, "FPOGID");
+        logit(eyetrackingLogline.FPOGV, "FPOGV");
+        logit(eyetrackingLogline.BPOGX, "BPOGX");
+        logit(eyetrackingLogline.BPOGY, "BPOGY");
+        logit(eyetrackingLogline.BPOGV, "BPOGV");
+
         //masterLog += string.Join("\t", data.ToArray());// + "\n";
         //print(masterLog);
         game.writer.WriteLine(string.Join("\t", data.ToArray()));
@@ -167,6 +195,14 @@ public class Log : MonoBehaviour {
         loglist = eventList;
         LogUniversal("GAME_EVENT", false, id, d1, d2);
         game.writer.Flush();
+    }
+
+    public void LogEyeTracker()
+    {
+        // TODO: process eyetrackingLogline from eyetrackString;
+
+        loglist = eyeList;
+        LogUniversal("EYETRACK");
     }
 
 }
