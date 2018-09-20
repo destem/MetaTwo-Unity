@@ -204,19 +204,22 @@ public class Log : MonoBehaviour {
         // eyetrackString looks like:
         // <REC TIME="38.41262" FPOGX="0.41352" FPOGY="0.80682" FPOGS="38.36427" FPOGD="0.04835" FPOGID="93" FPOGV="1" BPOGX="0.43701" BPOGY="0.81848" BPOGV="1" />
         string[] eye = eyetrackString.Split(separatingChars);
-        eyetrackingLogline.ETT = eye[3];
-        eyetrackingLogline.FPOGX = eye[7];
-        eyetrackingLogline.FPOGY = eye[11];
-        eyetrackingLogline.FPOGS = eye[15];
-        eyetrackingLogline.FPOGD = eye[19];
-        eyetrackingLogline.FPOGID = eye[23];
-        eyetrackingLogline.FPOGV = eye[27];
-        eyetrackingLogline.BPOGX = eye[31];
-        eyetrackingLogline.BPOGY = eye[35];
-        eyetrackingLogline.BPOGV = eye[39];
- 
-        loglist = eyeList;
-        LogUniversal("EYETRACK");
+        if (eye[0] == "<REC")
+        {
+            eyetrackingLogline.ETT = eye[3];
+            eyetrackingLogline.FPOGX = eye[7];
+            eyetrackingLogline.FPOGY = eye[11];
+            eyetrackingLogline.FPOGS = eye[15];
+            eyetrackingLogline.FPOGD = eye[19];
+            eyetrackingLogline.FPOGID = eye[23];
+            eyetrackingLogline.FPOGV = eye[27];
+            eyetrackingLogline.BPOGX = eye[31];
+            eyetrackingLogline.BPOGY = eye[35];
+            eyetrackingLogline.BPOGV = eye[39];
+
+            loglist = eyeList;
+            LogUniversal("EYETRACK");
+        }
     }
 
 }
