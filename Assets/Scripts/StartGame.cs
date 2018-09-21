@@ -65,8 +65,11 @@ public class StartGame : MonoBehaviour
         {
             //print(reader.ReadToEnd());
             //print("---------");
-            comp.log.eyetrackString = reader.ReadLine();
-            comp.log.LogEyeTracker();
+            //while (reader.Peek() > -1)
+            //{
+                comp.log.eyetrackString = reader.ReadLine();
+                comp.log.LogEyeTracker();
+            //}
 
             // EX: Server says: <REC TIME="38.41262" FPOGX="0.41352" FPOGY="0.80682" FPOGS="38.36427" FPOGD="0.04835" FPOGID="93" FPOGV="1" BPOGX="0.43701" BPOGY="0.81848" BPOGV="1" />
             //print("Server says: " + data);
