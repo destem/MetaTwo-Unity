@@ -21,6 +21,7 @@ public class StartGame : MonoBehaviour
     StreamWriter writer;
     StreamReader reader;
     bool socketReady = false;
+    char[] buffer = new char[4096];
 
     // Use this for initialization
     void Start()
@@ -63,21 +64,14 @@ public class StartGame : MonoBehaviour
         }
         if (socketReady && stream.DataAvailable && comp.log != null)
         {
-            //print(reader.ReadToEnd());
-            //print("---------");
-            
-            //while (reader.Peek() > -1)
-            //{
-                comp.log.eyetrackString = reader.ReadLine();
-                comp.log.LogEyeTracker();
-            //}
-            //while ((comp.log.eyetrackString = reader.ReadLine()) != null)
-            //{
-            //    comp.log.LogEyeTracker();
-            //}
+          
+            comp.log.eyetrackString = reader.ReadLine();
+            comp.log.LogEyeTracker();
 
-            // EX: Server says: <REC TIME="38.41262" FPOGX="0.41352" FPOGY="0.80682" FPOGS="38.36427" FPOGD="0.04835" FPOGID="93" FPOGV="1" BPOGX="0.43701" BPOGY="0.81848" BPOGV="1" />
-            //print("Server says: " + data);
+            // clear read buffer. Eyetracker is running at roughly 60Hz, but just in case
+            // NOTE: doing this keeps it in sync but misses every other frame, leading to one eyetrack event for every two game_state loglines
+            //reader.Read(buffer, 0, buffer.Length);
+           
         }
     }
 
