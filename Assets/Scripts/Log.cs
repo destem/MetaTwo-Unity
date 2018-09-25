@@ -23,34 +23,15 @@ public class Log : MonoBehaviour {
     string masterLog = "";
     string[] logHeaderArray = {"ts","event_type", "SID","ECID","session","game_type","game_number","episode_number","level","score","lines_cleared",
         "completed","game_duration","avg_ep_duration","zoid_sequence","evt_id","evt_data1","evt_data2",
-        "curr_zoid","next_zoid","danger_mode",
-        "evt_sequence","rots","trans","path_length",
-        "min_rots","min_trans","min_path",
-        "min_rots_diff","min_trans_diff","min_path_diff",
-        "u_drops","s_drops","prop_u_drops",
-        "initial_lat","drop_lat","avg_lat",
-        "tetrises_game","tetrises_level",
-         "agree","delaying","dropping","zoid_rot","zoid_col","zoid_row","board_rep","zoid_rep", "eye_tracker_time", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY","BPOGV"};
+        "curr_zoid","next_zoid","board_rep","zoid_rep", "eye_tracker_time", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY","BPOGV"};
     string[] gameStateList = { "SID","ECID","session","game_type","game_number","episode_number",
-    "level","score","lines_cleared","danger_mode",
-    "delaying","dropping","curr_zoid","next_zoid",
-    "zoid_rot","zoid_col","zoid_row","board_rep","zoid_rep" };
+    "level","score","lines_cleared","board_rep","zoid_rep" };
     string[] episodeList = { "SID","ECID","session","game_type","game_number","episode_number",
       "level","score","lines_cleared",
-      "curr_zoid","next_zoid","danger_mode",
-      "zoid_rot","zoid_col","zoid_row",
-      "board_rep","zoid_rep","evt_sequence","rots","trans","path_length",
-      "min_rots","min_trans","min_path",
-      "min_rots_diff","min_trans_diff","min_path_diff",
-      "u_drops","s_drops","prop_u_drops",
-      "initial_lat","drop_lat","avg_lat",
-      "tetrises_game","tetrises_level",
-      "agree" };
+      "curr_zoid","next_zoid"};
     string[] eventList = { "SID","ECID","session","game_type","game_number","episode_number",
       "level","score","lines_cleared",
-      "curr_zoid","next_zoid","danger_mode",
-      "delaying","dropping",
-      "zoid_rot","zoid_col","zoid_row" };
+      "curr_zoid","next_zoid" };
     string[] summList = { "SID","ECID","session","game_type","game_number","episode_number",
     "level","score","lines_cleared","completed",
     "game_duration","avg_ep_duration","zoid_sequence" };
@@ -108,6 +89,7 @@ public class Log : MonoBehaviour {
         data.Clear();
         data.Add(Time.time.ToString());
         data.Add(eventType);
+        logit(Settings.subjectNumber.ToString(), "SID");
         logit(Settings.ECID.ToString(), "ECID");
         logit(Settings.session, "session");
         logit(Settings.gameType, "game_type");
