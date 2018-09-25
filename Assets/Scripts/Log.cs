@@ -20,12 +20,13 @@ public class EyetrackLogline
 public class Log : MonoBehaviour {
 
     List<string> data = new List<string>();
+    List<char> nextZoids = new List<char>();
     string masterLog = "";
     string[] logHeaderArray = {"ts","event_type", "SID","ECID","session","game_type","game_number","episode_number","level","score","lines_cleared",
         "completed","game_duration","avg_ep_duration","zoid_sequence","evt_id","evt_data1","evt_data2",
         "curr_zoid","next_zoid","board_rep","zoid_rep", "eye_tracker_time", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY","BPOGV"};
     string[] gameStateList = { "SID","ECID","session","game_type","game_number","episode_number",
-    "level","score","lines_cleared","board_rep","zoid_rep" };
+    "level","score","lines_cleared","curr_zoid", "next_zoid", "board_rep","zoid_rep" };
     string[] episodeList = { "SID","ECID","session","game_type","game_number","episode_number",
       "level","score","lines_cleared",
       "curr_zoid","next_zoid"};
@@ -129,7 +130,19 @@ public class Log : MonoBehaviour {
             data.Add("");
         }
         logit(Zoid.names[game.curr].ToString(), "curr_zoid");
-        logit(Zoid.names[game.next].ToString(), "next_zoid");
+
+        if (Settings.numPreviewZoids < 2)
+        {
+            logit(Zoid.names[game.next].ToString(), "next_zoid");
+        }
+        else {
+            nextZoids.Clear();
+            for (int i = 0; i < game.previewZoidQueue.Count; i++)
+            {
+                nextZoids.Add(Zoid.names[game.previewZoidQueue.ElementAt(i).zoidType]);
+            }
+            logit(new string(nextZoids.ToArray()), "next_zoid");
+        }
 
         // Implement slice to skip first three rows??
         logit(PrettyPrint2DArray(game.board.contents), "board_rep");

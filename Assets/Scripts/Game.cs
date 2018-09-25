@@ -26,7 +26,7 @@ public class Game : MonoBehaviour {
     int[] scoreVals = { 0, 40, 100, 300, 1200 };
     delegate void taskDelegate();
     taskDelegate currentTask;
-    Queue<Zoid> previewZoidQueue;
+    public Queue<Zoid> previewZoidQueue;
     [SerializeField] private LineRenderer nextLine;
 
     [SerializeField] private GameObject zoidSprite;
