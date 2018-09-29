@@ -1096,7 +1096,7 @@ GameObject:
   - component: {fileID: 1558026919}
   - component: {fileID: 1558026918}
   m_Layer: 5
-  m_Name: InputField
+  m_Name: Input_Level
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1452,6 +1452,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameCanvas: {fileID: 1898856161}
+  line: {fileID: 1758403363}
+  nextLine: {fileID: 357999680}
   game: {fileID: 2133570952}
 --- !u!1 &1898856161
 GameObject:

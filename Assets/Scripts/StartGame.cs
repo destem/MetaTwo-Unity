@@ -11,7 +11,10 @@ public class StartGame : MonoBehaviour
 {
     
     public GameObject gameCanvas;
+    public GameObject line;
+    public GameObject nextLine;
     public GameObject game;
+
     Game comp;
     Canvas canvas;
     bool acceptInput = true;
@@ -23,11 +26,15 @@ public class StartGame : MonoBehaviour
     bool socketReady = false;
     char[] buffer = new char[4096];
 
+    GameObject inputLevel;
+
     // Use this for initialization
     void Start()
     {
+        inputLevel = GameObject.Find("Input_Level");
         comp = game.GetComponent<Game>();
         canvas = GetComponent<Canvas>();
+
     }
 
 
@@ -79,13 +86,16 @@ public class StartGame : MonoBehaviour
 
     public void LaunchGame()
     {
-        int level = System.Int32.Parse(transform.Find("InputField").gameObject.GetComponent<UnityEngine.UI.InputField>().text);
+        int level = System.Int32.Parse(inputLevel.GetComponent<UnityEngine.UI.InputField>().text);
         level = Mathf.Clamp(level, 0, 29);
         //print(level);
         //gameObject.SetActive(false);
         acceptInput = false;
         canvas.enabled = false;
+
         game.SetActive(true);
+        line.SetActive(true);
+        nextLine.SetActive(true);
 
         comp.startlevel = level;
         gameCanvas.SetActive(true);
@@ -100,6 +110,8 @@ public class StartGame : MonoBehaviour
         comp.ClearBoard();
         //game.SetActive(false);
         gameCanvas.SetActive(false);
+        line.SetActive(false);
+        nextLine.SetActive(false);
     }
 
     public void ConnectToEyetrackerAndCalibrate()
