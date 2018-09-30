@@ -182,7 +182,7 @@ public class Game : MonoBehaviour {
     public void Reset () {
         //print(Application.persistentDataPath);
         System.DateTime timestamp = System.DateTime.Now;
-        writer = new StreamWriter(Application.persistentDataPath + "/" + string.Format("{0}_{1}", Settings.subjectNumber, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + ".tsv", true);
+        writer = new StreamWriter(Application.persistentDataPath + "/" + string.Format("{0}_{1}", Settings.subjectID, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + ".tsv", true);
         writer.WriteLine(log.logHeader);
         board = new Board();
         dummyboard = new Board();
@@ -493,7 +493,7 @@ public class Game : MonoBehaviour {
                 //// LOG END-OF-GAME INFO
                 log.LogGameSumm();
                 writer.Close();
-                GameObject.Find("StartCanvas").GetComponent<StartGame>().BackToMenu();
+                GameObject.Find("ReadyCanvas").GetComponent<StartGame>().BackToMenu();
             }
         }
 

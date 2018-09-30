@@ -90,8 +90,8 @@ public class Log : MonoBehaviour {
         data.Clear();
         data.Add(Time.time.ToString());
         data.Add(eventType);
-        logit(Settings.subjectNumber.ToString(), "SID");
-        logit(Settings.ECID.ToString(), "ECID");
+        logit(Settings.subjectID, "SID");
+        logit(Settings.ECID, "ECID");
         logit(Settings.session, "session");
         logit(Settings.gameType, "game_type");
         logit(game.gameNumber.ToString(), "game_number");

@@ -26,15 +26,21 @@ public class StartGame : MonoBehaviour
     bool socketReady = false;
     char[] buffer = new char[4096];
 
+    GameObject inputSID;
+    GameObject inputECID;
+    GameObject inputGameType;
     GameObject inputLevel;
 
     // Use this for initialization
     void Start()
     {
         inputLevel = GameObject.Find("Input_Level");
+        inputSID = GameObject.Find("Input_SID");
+        inputECID = GameObject.Find("Input_ECID");
+        inputGameType = GameObject.Find("Input_GameType");
+
         comp = game.GetComponent<Game>();
         canvas = GetComponent<Canvas>();
-
     }
 
 
@@ -86,7 +92,13 @@ public class StartGame : MonoBehaviour
 
     public void LaunchGame()
     {
+        Settings.subjectID = inputSID.GetComponent<UnityEngine.UI.InputField>().text;
+        Settings.ECID = inputECID.GetComponent<UnityEngine.UI.InputField>().text;
+        Settings.gameType = inputGameType.GetComponent<UnityEngine.UI.InputField>().text;
+
         int level = System.Int32.Parse(inputLevel.GetComponent<UnityEngine.UI.InputField>().text);
+
+
         level = Mathf.Clamp(level, 0, 29);
         //print(level);
         //gameObject.SetActive(false);

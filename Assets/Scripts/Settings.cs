@@ -4,10 +4,10 @@ using UnityEngine;
 
 public static class Settings{
 
-    public static int numPreviewZoids = 5;
+    public static int numPreviewZoids = 1;
     public static int randomSeed = 0;
-    public static int subjectNumber = 1234;
-    public static int ECID = 0;
+    public static string subjectID = "no_val";
+    public static string ECID = "no_val";
     public static string session = "";
     public static int startLevel = 0;
     public static string gameType = "standard";
