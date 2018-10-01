@@ -22,7 +22,6 @@ public class UIControllerScript : MonoBehaviour
     int startLevel;
 
 
-
     // Use this for initialization
     void Start()
     {
