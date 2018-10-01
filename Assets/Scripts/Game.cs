@@ -8,7 +8,9 @@ enum keyEnum { Down, Left, Right, Pause, Rotate, Counterrotate, Invert };
 enum soundEnum {clear1, clear4, crash, keep, music, music_fast, levelup, move, pause, rotate, slam };
 
 public class Game : MonoBehaviour {
-    
+
+    public GameObject UIController;
+
     public Board board;
     Board dummyboard;
     Camera cam;
@@ -103,6 +105,8 @@ public class Game : MonoBehaviour {
     public StreamWriter writer;
 
 
+    UIControllerScript uiContrl;
+
     private void Awake()
     {
         Application.targetFrameRate = 60;
@@ -175,6 +179,8 @@ public class Game : MonoBehaviour {
             nextLine.SetPosition(2, new Vector3(pos2.x, pos2.y - (2.3f * board.spacing * Settings.numPreviewZoids), pos2.z));
             nextLine.SetPosition(3, new Vector3(pos3.x, pos3.y - (2.3f * board.spacing * Settings.numPreviewZoids), pos3.z));
         }
+
+        uiContrl = UIController.GetComponent<UIControllerScript>();
 
     }
 
@@ -493,7 +499,9 @@ public class Game : MonoBehaviour {
                 //// LOG END-OF-GAME INFO
                 log.LogGameSumm();
                 writer.Close();
-                GameObject.Find("ReadyCanvas").GetComponent<StartGame>().BackToMenu();
+
+                //todo:display score
+                uiContrl.FinishGame();
             }
         }
 

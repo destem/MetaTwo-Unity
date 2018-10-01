@@ -7,6 +7,9 @@ using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
+
+
+
 public class StartGame : MonoBehaviour
 {
     
@@ -14,10 +17,13 @@ public class StartGame : MonoBehaviour
     public GameObject line;
     public GameObject nextLine;
     public GameObject game;
+    public GameObject eyeTracker;
+    public GameObject steadyCanvas;
 
     Game comp;
+    EyeTrackerScript eyeTracker_Script;
     Canvas canvas;
-    bool acceptInput = true;
+    bool acceptInput = false;
 
     TcpClient socket;
     NetworkStream stream;
@@ -39,6 +45,7 @@ public class StartGame : MonoBehaviour
         inputECID = GameObject.Find("Input_ECID");
         inputGameType = GameObject.Find("Input_GameType");
 
+        eyeTracker_Script = eyeTracker.GetComponent<EyeTrackerScript>();
         comp = game.GetComponent<Game>();
         canvas = GetComponent<Canvas>();
     }
@@ -51,6 +58,7 @@ public class StartGame : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Return))
             {
+
                 comp.useKeyboard = true;
                 comp.useTomee = false;
                 comp.useRetro = false;
@@ -58,6 +66,8 @@ public class StartGame : MonoBehaviour
             }
             if (Input.GetKeyDown("joystick button 0"))
             {
+
+
                 //Assuming Tomee converted gamepad
                 print("Tomee");
                 comp.useKeyboard = false;
@@ -67,6 +77,7 @@ public class StartGame : MonoBehaviour
             }
             if (Input.GetKeyDown("joystick button 1"))
             {
+
                 //Assuming NES-Retro  gamepad
                 print("Retro");
                 comp.useKeyboard = false;
@@ -112,18 +123,17 @@ public class StartGame : MonoBehaviour
         comp.startlevel = level;
         gameCanvas.SetActive(true);
         comp.Reset();
+
+        //todo: added
+        steadyCanvas.SetActive(false);
     }
 
     public void BackToMenu()
     {
-        acceptInput = true;
+        
         //gameObject.SetActive(true);
         canvas.enabled = true;
-        comp.ClearBoard();
-        //game.SetActive(false);
-        gameCanvas.SetActive(false);
-        line.SetActive(false);
-        nextLine.SetActive(false);
+        steadyCanvas.SetActive(false);
     }
 
     public void ConnectToEyetrackerAndCalibrate()
@@ -145,4 +155,25 @@ public class StartGame : MonoBehaviour
         writer.Write("<SET ID=\"CALIBRATE_START\" STATE=\"1\" />\r\n");
         writer.Flush();
     }
+
+    public void GotoSteady()
+    {
+        steadyCanvas.SetActive(true);
+
+        if (comp.board != null)
+        {
+            comp.ClearBoard();
+        }
+
+      //game.SetActive(false);
+        gameCanvas.SetActive(false);
+        line.SetActive(false);
+        nextLine.SetActive(false);
+
+        acceptInput = true;
+        canvas.enabled = false;
+    }
+
+
+
 }
