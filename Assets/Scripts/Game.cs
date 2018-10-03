@@ -181,7 +181,6 @@ public class Game : MonoBehaviour {
         }
 
         uiContrl = UIController.GetComponent<UIControllerScript>();
-
     }
 
     // Use this for initialization

@@ -6,6 +6,7 @@ using System.Linq;
 public class EyetrackLogline
 {
     public string ETT;
+    public string TIMETICK;
     public string FPOGX;
     public string FPOGY;
     public string FPOGS;
@@ -24,7 +25,7 @@ public class Log : MonoBehaviour {
     string masterLog = "";
     string[] logHeaderArray = {"ts","event_type", "SID","ECID","session","game_type","game_number","episode_number","level","score","lines_cleared",
         "completed","game_duration","avg_ep_duration","zoid_sequence","evt_id","evt_data1","evt_data2",
-        "curr_zoid","next_zoid","board_rep","zoid_rep", "eye_tracker_time", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY","BPOGV"};
+        "curr_zoid","next_zoid","board_rep","zoid_rep", "eye_tracker_time", "time_tick", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY","BPOGV"};
     string[] gameStateList = { "SID","ECID","session","game_type","game_number","episode_number",
     "level","score","lines_cleared","curr_zoid", "next_zoid", "board_rep","zoid_rep" };
     string[] episodeList = { "SID","ECID","session","game_type","game_number","episode_number",
@@ -36,11 +37,11 @@ public class Log : MonoBehaviour {
     string[] summList = { "SID","ECID","session","game_type","game_number","episode_number",
     "level","score","lines_cleared","completed",
     "game_duration","avg_ep_duration","zoid_sequence" };
-    string[] eyeList = { "eye_tracker_time", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY", "BPOGV" };
+    string[] eyeList = { "eye_tracker_time", "time_tick", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY", "BPOGV" };
     public string logHeader;
     string[] loglist;
     public Game game;
-    public string eyetrackString= "<REC TIME=\"38.41262\" FPOGX=\"0.41352\" FPOGY=\"0.80682\" FPOGS=\"38.36427\" FPOGD=\"0.04835\" FPOGID=\"93\" FPOGV=\"1\" BPOGX=\"0.43701\" BPOGY=\"0.81848\" BPOGV=\"1\" />";
+    public string eyetrackString= "";
     EyetrackLogline eyetrackingLogline = new EyetrackLogline();
     char[] separatingChars = { ' ', '=', '"' };
 
@@ -149,6 +150,7 @@ public class Log : MonoBehaviour {
         logit(PrettyPrint2DArray(game.zoid.ZoidRep()), "zoid_rep");
 
         logit(eyetrackingLogline.ETT, "eye_tracker_time");
+        logit(eyetrackingLogline.TIMETICK, "time_tick");
         logit(eyetrackingLogline.FPOGX, "FPOGX");
         logit(eyetrackingLogline.FPOGY, "FPOGY");
         logit(eyetrackingLogline.FPOGS, "FPOGS");
@@ -202,15 +204,16 @@ public class Log : MonoBehaviour {
         if (eye[0] == "<REC")
         {
             eyetrackingLogline.ETT = eye[3];
-            eyetrackingLogline.FPOGX = eye[7];
-            eyetrackingLogline.FPOGY = eye[11];
-            eyetrackingLogline.FPOGS = eye[15];
-            eyetrackingLogline.FPOGD = eye[19];
-            eyetrackingLogline.FPOGID = eye[23];
-            eyetrackingLogline.FPOGV = eye[27];
-            eyetrackingLogline.BPOGX = eye[31];
-            eyetrackingLogline.BPOGY = eye[35];
-            eyetrackingLogline.BPOGV = eye[39];
+            eyetrackingLogline.TIMETICK = eye[7];
+            eyetrackingLogline.FPOGX = eye[11];
+            eyetrackingLogline.FPOGY = eye[15];
+            eyetrackingLogline.FPOGS = eye[19];
+            eyetrackingLogline.FPOGD = eye[23];
+            eyetrackingLogline.FPOGID = eye[27];
+            eyetrackingLogline.FPOGV = eye[31];
+            eyetrackingLogline.BPOGX = eye[35];
+            eyetrackingLogline.BPOGY = eye[39];
+            eyetrackingLogline.BPOGV = eye[43];
 
             loglist = eyeList;
             LogUniversal("EYETRACK");

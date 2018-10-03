@@ -31,6 +31,7 @@ public class EyeTrackerScript : MonoBehaviour {
         if (socketReady && stream.DataAvailable && comp.log != null)
         {
             comp.log.eyetrackString = reader.ReadLine();
+            //print(comp.log.eyetrackString);
             comp.log.LogEyeTracker();
 
             // clear read buffer. Eyetracker is running at roughly 60Hz, but just in case
@@ -53,6 +54,7 @@ public class EyeTrackerScript : MonoBehaviour {
         writer.Write("<SET ID=\"ENABLE_SEND_TIME\" STATE=\"1\" />\r\n");
         writer.Write("<SET ID=\"ENABLE_SEND_POG_FIX\" STATE=\"1\" />\r\n");
         writer.Write("<SET ID=\"ENABLE_SEND_POG_BEST\" STATE=\"1\" />\r\n");
+        writer.Write("<SET ID=\"ENABLE_SEND_TIME_TICK\" STATE=\"1\" />\r\n");
         //writer.Write("<SET ID=\"ENABLE_SEND_CURSOR\" STATE=\"1\" />\r\n");
         writer.Write("<SET ID=\"ENABLE_SEND_DATA\" STATE=\"1\" />\r\n");
 

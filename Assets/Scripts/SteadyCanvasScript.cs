@@ -6,7 +6,7 @@ using UnityEngine;
 public enum InputType {keyboard, converted, retropad };
 
 
-
+//todo: make canvas for lvl
 
 public class SteadyCanvasScript : MonoBehaviour {
 

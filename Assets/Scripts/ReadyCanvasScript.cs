@@ -6,10 +6,11 @@ public class ReadyCanvasScript : MonoBehaviour
 {
     public GameObject uiController;
 
-    GameObject inputLevel;
-    GameObject inputSID;
-    GameObject inputECID;
-    GameObject inputGameType;
+    public GameObject inputLevel;
+    public GameObject inputSID;
+    public GameObject inputECID;
+    public GameObject inputGameType;
+    public GameObject inputController;
 
     UIControllerScript uiContrl;
 
@@ -17,22 +18,24 @@ public class ReadyCanvasScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        //TODO: ask marc about better way.
-        inputLevel = GameObject.Find("Input_Level");
-        inputSID = GameObject.Find("Input_SID");
-        inputECID = GameObject.Find("Input_ECID");
-        inputGameType = GameObject.Find("Input_GameType");
-
         uiContrl = uiController.GetComponent<UIControllerScript>();
     }
 
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
 
     public void BeginButtonClick()
     {
         uiContrl.BeginExperiment(inputSID.GetComponent<UnityEngine.UI.InputField>().text,
                                 inputECID.GetComponent<UnityEngine.UI.InputField>().text,
-                                inputGameType.GetComponent<UnityEngine.UI.InputField>().text,
-                                inputLevel.GetComponent<UnityEngine.UI.InputField>().text
+                                inputGameType.GetComponent<UnityEngine.UI.Dropdown>().value,
+                                 inputController.GetComponent<UnityEngine.UI.Dropdown>().value
                                 );
     }
 }
