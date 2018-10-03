@@ -23,9 +23,9 @@ public class Log : MonoBehaviour {
     List<string> data = new List<string>();
     List<char> nextZoids = new List<char>();
     string masterLog = "";
-    string[] logHeaderArray = {"ts","event_type", "SID","ECID","session","game_type","game_number","episode_number","level","score","lines_cleared",
+    string[] logHeaderArray = {"ts","system_ticks", "event_type", "SID","ECID","session","game_type","game_number","episode_number","level","score","lines_cleared",
         "completed","game_duration","avg_ep_duration","zoid_sequence","evt_id","evt_data1","evt_data2",
-        "curr_zoid","next_zoid","board_rep","zoid_rep", "eye_tracker_time", "time_tick", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY","BPOGV"};
+        "curr_zoid","next_zoid","board_rep","zoid_rep", "eye_tracker_time", "eye_time_tick", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY","BPOGV"};
     string[] gameStateList = { "SID","ECID","session","game_type","game_number","episode_number",
     "level","score","lines_cleared","curr_zoid", "next_zoid", "board_rep","zoid_rep" };
     string[] episodeList = { "SID","ECID","session","game_type","game_number","episode_number",
@@ -37,7 +37,7 @@ public class Log : MonoBehaviour {
     string[] summList = { "SID","ECID","session","game_type","game_number","episode_number",
     "level","score","lines_cleared","completed",
     "game_duration","avg_ep_duration","zoid_sequence" };
-    string[] eyeList = { "eye_tracker_time", "time_tick", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY", "BPOGV" };
+    string[] eyeList = { "eye_tracker_time", "eye_time_tick", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY", "BPOGV" };
     public string logHeader;
     string[] loglist;
     public Game game;
@@ -90,6 +90,8 @@ public class Log : MonoBehaviour {
     {
         data.Clear();
         data.Add(Time.time.ToString());
+        //data.Add(System.DateTime.Now.Ticks.ToString());
+        data.Add(System.Environment.TickCount.ToString());
         data.Add(eventType);
         logit(Settings.subjectID, "SID");
         logit(Settings.ECID, "ECID");
@@ -150,7 +152,7 @@ public class Log : MonoBehaviour {
         logit(PrettyPrint2DArray(game.zoid.ZoidRep()), "zoid_rep");
 
         logit(eyetrackingLogline.ETT, "eye_tracker_time");
-        logit(eyetrackingLogline.TIMETICK, "time_tick");
+        logit(eyetrackingLogline.TIMETICK, "eye_time_tick");
         logit(eyetrackingLogline.FPOGX, "FPOGX");
         logit(eyetrackingLogline.FPOGY, "FPOGY");
         logit(eyetrackingLogline.FPOGS, "FPOGS");
