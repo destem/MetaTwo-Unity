@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 public class EyetrackLogline
 {
@@ -44,6 +45,16 @@ public class Log : MonoBehaviour {
     public string eyetrackString= "";
     EyetrackLogline eyetrackingLogline = new EyetrackLogline();
     char[] separatingChars = { ' ', '=', '"' };
+
+
+    [DllImport("Kernel32.dll")]
+    private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
+
+    [DllImport("Kernel32.dll")]
+    private static extern bool QueryPerformanceFrequency(
+        out long lpFrequency);
+
+
 
     public void Awake(){
         logHeader = string.Join("\t", logHeaderArray);
@@ -90,8 +101,11 @@ public class Log : MonoBehaviour {
     {
         data.Clear();
         data.Add(Time.time.ToString());
-        //data.Add(System.DateTime.Now.Ticks.ToString());
-        data.Add(System.Environment.TickCount.ToString());
+
+        long tick;
+        QueryPerformanceCounter(out tick);
+        data.Add(tick.ToString());
+
         data.Add(eventType);
         logit(Settings.subjectID, "SID");
         logit(Settings.ECID, "ECID");

@@ -490,17 +490,7 @@ public class Game : MonoBehaviour {
             are = 1;
             if (board.Commit(zoid))
             {
-                //GAME OVER
-                alive = false;
-                musicSystem.Stop();
-                soundSystem.PlayOneShot(clips[(int)soundEnum.crash], 1f);
-
-                //// LOG END-OF-GAME INFO
-                log.LogGameSumm();
-                writer.Close();
-
-                //todo:display score
-                uiContrl.FinishGame();
+                GameOver();
             }
         }
 
@@ -522,6 +512,21 @@ public class Game : MonoBehaviour {
         currentTask = LineCheck;
         //copy board contents into the backup board, in case there are lines to clear
         System.Array.Copy(board.contents, dummyboard.contents, board.contents.Length);
+    }
+
+    public void GameOver()
+    {
+        //GAME OVER
+        alive = false;
+        musicSystem.Stop();
+        soundSystem.PlayOneShot(clips[(int)soundEnum.crash], 1f);
+
+        //// LOG END-OF-GAME INFO
+        log.LogGameSumm();
+        writer.Close();
+
+        //todo:display score
+        uiContrl.FinishGame();
     }
 
     void LineCheck(){

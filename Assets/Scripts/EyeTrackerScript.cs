@@ -8,14 +8,14 @@ using System.IO;
 
 public class EyeTrackerScript : MonoBehaviour {
 
-    Game comp;
     public GameObject game;
 
-
+    Game comp;
     TcpClient socket;
     NetworkStream stream;
     StreamWriter writer;
     StreamReader reader;
+
     bool socketReady = false;
     char[] buffer = new char[4096];
 
@@ -27,7 +27,6 @@ public class EyeTrackerScript : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
         if (socketReady && stream.DataAvailable && comp.log != null)
         {
             comp.log.eyetrackString = reader.ReadLine();
@@ -61,6 +60,9 @@ public class EyeTrackerScript : MonoBehaviour {
         writer.Write("<SET ID=\"CALIBRATE_SHOW\" STATE=\"1\" />\r\n");
         writer.Flush();
         writer.Write("<SET ID=\"CALIBRATE_START\" STATE=\"1\" />\r\n");
+        writer.Flush();
+
+        writer.Write("<GET ID =\"TIME_TICK_FREQUENCY\" />");
         writer.Flush();
     }
 }

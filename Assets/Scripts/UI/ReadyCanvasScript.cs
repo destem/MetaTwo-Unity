@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class ReadyCanvasScript : MonoBehaviour
 {
     public GameObject uiController;
@@ -24,6 +25,7 @@ public class ReadyCanvasScript : MonoBehaviour
 
     private void Update()
     {
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
