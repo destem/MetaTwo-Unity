@@ -5,9 +5,11 @@ using System.Linq;
 using System.IO;
 
 enum keyEnum { Down, Left, Right, Pause, Rotate, Counterrotate, Invert };
-enum soundEnum {clear1, clear4, crash, keep, music, music_fast, levelup, move, pause, rotate, slam };
+enum soundEnum { clear1, clear4, crash, keep, music, music_fast, levelup, move, pause, rotate, slam };
 
-public class Game : MonoBehaviour {
+
+public class Game : MonoBehaviour
+{
 
     public GameObject UIController;
 
@@ -19,10 +21,10 @@ public class Game : MonoBehaviour {
     AudioSource soundSystem;
     public UnityEngine.UI.Text scoreText;
 
-    int DAS_NEGATIVE_EDGE=10;
-    int DAS_MAX=16;
-    int GRAVITY_START_DELAY=97;
-    int LINECLEAR_STEPS=5;
+    int DAS_NEGATIVE_EDGE = 10;
+    int DAS_MAX = 16;
+    int GRAVITY_START_DELAY = 97;
+    int LINECLEAR_STEPS = 5;
     // not expecting to go past level 30?
     int[] speedLevels = { 48, 43, 38, 33, 28, 23, 18, 13, 8, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1 };
     int[] scoreVals = { 0, 40, 100, 300, 1200 };
@@ -33,7 +35,7 @@ public class Game : MonoBehaviour {
 
     [SerializeField] private GameObject zoidSprite;
 
-  
+
     private GameObject[,] renderedSprites;
     private SpriteRenderer[,] spriteRenderers;
 
@@ -45,21 +47,21 @@ public class Game : MonoBehaviour {
 
     SpriteRenderer rend;
 
-    Dictionary<string, int> keys = new Dictionary<string, int> { { "LEFT", 0 }, { "RIGHT", 1 }, { "DOWN", 2 }, { "ROTATE", 3 }, { "COUNTERROTATE", 4 }, {"PAUSE",5 } };
+    Dictionary<string, int> keys = new Dictionary<string, int> { { "LEFT", 0 }, { "RIGHT", 1 }, { "DOWN", 2 }, { "ROTATE", 3 }, { "COUNTERROTATE", 4 }, { "PAUSE", 5 } };
     Color darkBackgroundColor = Color.black; // new Color(.31f, .31f, .31f, 1f);
     Color lightBackgroundColor = Color.white;
     int frames = 0;
     bool alive = true;
     bool paused = false;
     bool inverted = false;
-   
+
     int are = 0;
     int _49 = 0;
     int vx = 0;
     int vy = 0;
     int vr = 0;
     public float gameStartTime;
-    
+
     int das = 0;
     int softdrop_timer = 0;
     int drop = 0;
@@ -80,9 +82,6 @@ public class Game : MonoBehaviour {
     public int curr = 0;
     public int next = 0;
 
-    public bool useKeyboard = true;
-    public bool useTomee = false;
-    public bool useRetro = false;
     int piece_count = 0;
     bool leftCurr = false;
     bool leftPrev = false;
@@ -111,7 +110,7 @@ public class Game : MonoBehaviour {
     {
         Application.targetFrameRate = 60;
         // either seed with fixed num from settings or the first four digits after the decimal point of the current time
-        Random.InitState(Settings.randomSeed > 0? Settings.randomSeed : (int)((Time.time - (int)Time.time) * 1000));
+        Random.InitState(Settings.randomSeed > 0 ? Settings.randomSeed : (int)((Time.time - (int)Time.time) * 1000));
         softdrop_timer = -GRAVITY_START_DELAY;
         cam = Camera.main;
         log = GetComponent<Log>();
@@ -144,7 +143,7 @@ public class Game : MonoBehaviour {
                 go.transform.parent = transform;
             }
         }
-       
+
 
         // create sprites for Next window
         nextSpriteParent = new GameObject("Next");
@@ -168,11 +167,13 @@ public class Game : MonoBehaviour {
         // move parent after parenting! subsprites are instantiated in world position
         nextSpriteParent.transform.position = new Vector3(2f, 1f, 0f);
 
-        if (Settings.numPreviewZoids == 0){
+        if (Settings.numPreviewZoids == 0)
+        {
             nextSpriteParent.SetActive(false);
             nextLine.gameObject.SetActive(false);
         }
-        else{
+        else
+        {
             // with one, the y-value of elements 2 and 3 of the "next" box is set to 0.6. We work our way down based on i*board.spacing
             Vector3 pos2 = nextLine.GetPosition(2);
             Vector3 pos3 = nextLine.GetPosition(3);
@@ -184,7 +185,8 @@ public class Game : MonoBehaviour {
     }
 
     // Use this for initialization
-    public void Reset () {
+    public void Reset()
+    {
         //print(Application.persistentDataPath);
         System.DateTime timestamp = System.DateTime.Now;
         writer = new StreamWriter(Application.persistentDataPath + "/" + string.Format("{0}_{1}", Settings.subjectID, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + ".tsv", true);
@@ -235,7 +237,7 @@ public class Game : MonoBehaviour {
         counterRotatePrev = false;
         fastMusic = false;
         rowsToClear = new List<int>();
-       
+
         currentTask = Active;
         previewZoidQueue = new Queue<Zoid>();
         curr = Mathf.FloorToInt(Random.value * 7);
@@ -266,11 +268,12 @@ public class Game : MonoBehaviour {
 
         musicSystem.clip = clips[(int)soundEnum.music];
         musicSystem.Play();
-       
-	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
         Poll();
         //
         if (JustPressed(keyEnum.Pause) && (!paused))
@@ -305,22 +308,23 @@ public class Game : MonoBehaviour {
             currentTask(); // only one real "job" is handled every frame, 
                            // this can be moving the zoid, checking for line clears, or updating the score
                            // currentTask is a function pointer
-            //foreach (taskDelegate subscriber in currentTask.GetInvocationList())
-            //{
-            //    print(subscriber.Method.Name);
-            //}
+                           //foreach (taskDelegate subscriber in currentTask.GetInvocationList())
+                           //{
+                           //    print(subscriber.Method.Name);
+                           //}
             frames++;
             log.LogWorld();
         }
         RenderBoard();
-	}
+    }
 
-  // Possibly the most delicate and important function in the game, translating user input into game commands.
-  // This logic is critical for certain advanced strategies once the game becomes super-fast, including charging DAS
-  // and allowing for the "Chinese Fireball" maneuver. PLEASE don't modify unless you're explicitly trying to trip up the experts
-  // as an experimental condition
+    // Possibly the most delicate and important function in the game, translating user input into game commands.
+    // This logic is critical for certain advanced strategies once the game becomes super-fast, including charging DAS
+    // and allowing for the "Chinese Fireball" maneuver. PLEASE don't modify unless you're explicitly trying to trip up the experts
+    // as an experimental condition
 
-    void Control(){
+    void Control()
+    {
         if (!downCurr)
         {
             if (JustPressed(keyEnum.Right) || JustPressed(keyEnum.Left))
@@ -394,7 +398,8 @@ public class Game : MonoBehaviour {
         }
     }
 
-    void Move(){
+    void Move()
+    {
         if (vx != 0)
         {
             bool shift = false;
@@ -414,7 +419,7 @@ public class Game : MonoBehaviour {
                 if (!zoid.Collide(board, vx, 0, 0))
                 {
                     zoid.x += vx;
-                    log.LogEvent("ZOID", "TRANSLATE", vx.ToString()); 
+                    log.LogEvent("ZOID", "TRANSLATE", vx.ToString());
                     soundSystem.PlayOneShot(clips[(int)soundEnum.move], 1f);
                 }
                 else
@@ -425,7 +430,8 @@ public class Game : MonoBehaviour {
         }
     }
 
-    void Rotate(){
+    void Rotate()
+    {
         if (vr != 0)
         {
             if (!zoid.Collide(board, 0, 0, vr))
@@ -441,7 +447,8 @@ public class Game : MonoBehaviour {
         }
     }
 
-    void Gravity(){
+    void Gravity()
+    {
         if (softdrop_timer < 0)
         {
             return;
@@ -477,14 +484,16 @@ public class Game : MonoBehaviour {
         }
     }
 
-    void Active(){
+    void Active()
+    {
         Control();
         Move();
         Rotate();
         Gravity();
     }
 
-    void UpdateTask(){
+    void UpdateTask()
+    {
         if (are == 0)
         {
             are = 1;
@@ -529,7 +538,8 @@ public class Game : MonoBehaviour {
         uiContrl.FinishGame();
     }
 
-    void LineCheck(){
+    void LineCheck()
+    {
         if (_49 < 0x20)
         {
             return;
@@ -574,11 +584,13 @@ public class Game : MonoBehaviour {
         }
     }
 
-    void LineAnim(){
+    void LineAnim()
+    {
         // all handled in 94ee, but checked elsewhere
     }
 
-    void ScoreUpdate(){
+    void ScoreUpdate()
+    {
         int lines_before = lines;
         lines += lines_this;
         int hex_trick = 0;
@@ -629,17 +641,20 @@ public class Game : MonoBehaviour {
         currentTask = GoalCheck;
     }
 
-    void GoalCheck(){
+    void GoalCheck()
+    {
         //not applicable in A-Type MetaTWO
         currentTask = Dummy;
     }
 
-    void Dummy(){
+    void Dummy()
+    {
         //skipped frame for unimplemented 2-player code
         currentTask = Prep;
     }
 
-    void Prep(){
+    void Prep()
+    {
         if (_49 < 0x20)
         {
             return;
@@ -675,7 +690,8 @@ public class Game : MonoBehaviour {
         currentTask = Active;
     }
 
-    void Sub_94ee(){
+    void Sub_94ee()
+    {
         if (currentTask == LineAnim)
         {
             if ((frames & 3) == 0)
@@ -716,7 +732,7 @@ public class Game : MonoBehaviour {
                     }
                 }
             }
-           
+
             if (are >= LINECLEAR_STEPS)
             {
                 are = 0;
@@ -729,7 +745,8 @@ public class Game : MonoBehaviour {
             }
             _49 = 0;
         }
-        else{
+        else
+        {
             for (int i = 0; i < 4; i++)
             {
                 this.Sub_9725();
@@ -737,7 +754,8 @@ public class Game : MonoBehaviour {
         }
     }
 
-    void Sub_9725(){
+    void Sub_9725()
+    {
         if (_49 > 0x15)
         {
             return;
@@ -750,7 +768,8 @@ public class Game : MonoBehaviour {
         _49 = 0x20;
     }
 
-    void Sub_9caf(){
+    void Sub_9caf()
+    {
         _49 = zoid.y;
         if (_49 < 0)
         {
@@ -758,7 +777,8 @@ public class Game : MonoBehaviour {
         }
     }
 
-    void Poll(){
+    void Poll()
+    {
         leftPrev = leftCurr;
         rightPrev = rightCurr;
         downPrev = downCurr;
@@ -767,62 +787,68 @@ public class Game : MonoBehaviour {
         pausePrev = pauseCurr;
         invertPrev = invertCurr;
 
-        if (useKeyboard){
-            leftCurr = Input.GetButton("Left");
-            rightCurr = Input.GetButton("Right");
-            downCurr = Input.GetButton("Down");
-            rotateCurr = Input.GetButton("Rotate");
-            counterRotateCurr = Input.GetButton("Counterrotate");
-            pauseCurr = Input.GetButton("Pause");
-            invertCurr = Input.GetButton("Invert");
-        }
-        /*
-        Tomee converted gamepad
-        MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_0;
-        MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_1;
-        MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_5;
-        MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
-        MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_4;
-        MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
-        */
-        else if (useTomee){
-            //for (int i =0; i<20; i++)
-            //{
-            //    if (Input.GetKey("joystick button " + i.ToString())) print("button " + i.ToString());
-            //}
-            //print("H " + Input.GetAxis("Horizontal").ToString());
+        switch (Settings.inpt)
+        {
+            case InputType.keyboard:
+                leftCurr = Input.GetButton("Left");
+                rightCurr = Input.GetButton("Right");
+                downCurr = Input.GetButton("Down");
+                rotateCurr = Input.GetButton("Rotate");
+                counterRotateCurr = Input.GetButton("Counterrotate");
+                pauseCurr = Input.GetButton("Pause");
+                invertCurr = Input.GetButton("Invert");
+                break;
 
-            leftCurr = Input.GetAxis("Horizontal") == -1; // Input.GetKey("joystick button 5");
-            rightCurr = Input.GetAxis("Horizontal") == 1; // Input.GetKey("joystick button 6");
-            downCurr = Input.GetAxis("Vertical") == -1; //Input.GetKey("joystick button 4");
-            rotateCurr = Input.GetKey("joystick button 0");
-            counterRotateCurr = Input.GetKey("joystick button 1");
-            pauseCurr = Input.GetKey("joystick button 3");
-            invertCurr = Input.GetButton("Invert");
-        }
-        /*
-        NES-Retro gamepad
-        MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_1;
-        MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_0;
-        MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_4;
-        MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
-        MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_5;
-        MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
-        }
-        */
-        else{
-            leftCurr = Input.GetKey("joystick button 4");
-            rightCurr = Input.GetKey("joystick button 6");
-            downCurr = Input.GetKey("joystick button 5");
-            rotateCurr = Input.GetKey("joystick button 1");
-            counterRotateCurr = Input.GetKey("joystick button 0");
-            pauseCurr = Input.GetKey("joystick button 3");
-            invertCurr = Input.GetButton("Invert");
+            /*
+            Tomee converted gamepad
+            MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_0;
+            MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_1;
+            MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_5;
+            MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
+            MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_4;
+            MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
+            */
+            case InputType.converted:
+                //for (int i =0; i<20; i++)
+                //{
+                //    if (Input.GetKey("joystick button " + i.ToString())) print("button " + i.ToString());
+                //}
+                //print("H " + Input.GetAxis("Horizontal").ToString());
+
+                leftCurr = Input.GetAxis("Horizontal") == -1; // Input.GetKey("joystick button 5");
+                rightCurr = Input.GetAxis("Horizontal") == 1; // Input.GetKey("joystick button 6");
+                downCurr = Input.GetAxis("Vertical") == -1; //Input.GetKey("joystick button 4");
+                rotateCurr = Input.GetKey("joystick button 0");
+                counterRotateCurr = Input.GetKey("joystick button 1");
+                pauseCurr = Input.GetKey("joystick button 3");
+                invertCurr = Input.GetButton("Invert");
+                break;
+
+            /*
+            NES-Retro gamepad
+            MetaTWO.config.AButton = Phaser.Gamepad.BUTTON_1;
+            MetaTWO.config.BButton = Phaser.Gamepad.BUTTON_0;
+            MetaTWO.config.leftButton = Phaser.Gamepad.BUTTON_4;
+            MetaTWO.config.rightButton = Phaser.Gamepad.BUTTON_6;
+            MetaTWO.config.downButton = Phaser.Gamepad.BUTTON_5;
+            MetaTWO.config.startButton = Phaser.Gamepad.BUTTON_3;
+            }
+            */
+            case InputType.retropad:
+                leftCurr = Input.GetKey("joystick button 4");
+                rightCurr = Input.GetKey("joystick button 6");
+                downCurr = Input.GetKey("joystick button 5");
+                rotateCurr = Input.GetKey("joystick button 1");
+                counterRotateCurr = Input.GetKey("joystick button 0");
+                pauseCurr = Input.GetKey("joystick button 3");
+                invertCurr = Input.GetButton("Invert");
+                break;
         }
 
     }
 
-    int PileHeight(){
+    int PileHeight()
+    {
         for (int iy = 0; iy < board.boardHeight; iy++)
         {
             for (int ix = 0; ix < board.boardWidth; ix++)
@@ -836,7 +862,8 @@ public class Game : MonoBehaviour {
         return 0;
     }
 
-    bool OnlyDown(){
+    bool OnlyDown()
+    {
         //special function to determine if the down key is the only one down right now
 
         if (downCurr && !leftCurr && !rightCurr && !rotateCurr && !counterRotateCurr && !invertCurr)
@@ -844,8 +871,10 @@ public class Game : MonoBehaviour {
         else { return false; }
     }
 
-    bool JustPressed(keyEnum k){
-        switch (k){
+    bool JustPressed(keyEnum k)
+    {
+        switch (k)
+        {
             case keyEnum.Left:
                 if ((leftCurr && !leftPrev)) { return true; }
                 break;
@@ -871,7 +900,8 @@ public class Game : MonoBehaviour {
         return false;
     }
 
-    bool OnlyDownHit(){
+    bool OnlyDownHit()
+    {
         if (JustPressed(keyEnum.Down) &&
             !JustPressed(keyEnum.Left) &&
             !JustPressed(keyEnum.Right) &&
@@ -884,7 +914,8 @@ public class Game : MonoBehaviour {
         else { return false; }
     }
 
-    public void ClearBoard(){
+    public void ClearBoard()
+    {
         for (int j = 0; j < board.boardHeight; j++)
         {
             for (int i = 0; i < board.boardWidth; i++)
@@ -943,10 +974,12 @@ public class Game : MonoBehaviour {
             }
             // zoid
             Coordinates blocks = zoid.GetBlocks();
-            for (int i = 0; i < 4; i++){
-                if (blocks.coords[i,1] >= 0){
-                    rend = spriteRenderers[blocks.coords[i, 1],blocks.coords[i, 0]];
-                    switch(zoid.style)
+            for (int i = 0; i < 4; i++)
+            {
+                if (blocks.coords[i, 1] >= 0)
+                {
+                    rend = spriteRenderers[blocks.coords[i, 1], blocks.coords[i, 0]];
+                    switch (zoid.style)
                     {
                         case 0:
                             rend.color = Color.white;
@@ -967,9 +1000,10 @@ public class Game : MonoBehaviour {
                 }
             }
 
-           
+
             // clear nextRenderers;
-            for (int i = 0; i < 14; i++){
+            for (int i = 0; i < 14; i++)
+            {
                 for (int j = 0; j < 4; j++)
                 {
                     nextRenderers[i, j].color = Color.black;
@@ -1019,7 +1053,8 @@ public class Game : MonoBehaviour {
 
             scoreText.text = string.Format("Score: {0}\nLines: {1}\nLevel: {2}", score, lines, level);
         }
-        else{
+        else
+        {
             // clear all sprites!
             for (int j = 0; j < board.boardHeight; j++)
             {
@@ -1043,7 +1078,7 @@ public class Game : MonoBehaviour {
 
     }
 
-   
+
 }
 
 //IMMEDIATE

@@ -5,6 +5,7 @@ using UnityEngine;
 
 
 
+
 public class UIControllerScript : MonoBehaviour
 {
     public GameObject readyCanvas;
@@ -16,10 +17,10 @@ public class UIControllerScript : MonoBehaviour
     public GameObject game;
 
     Game gameScript;
-    int startLevel=9;
+    int startLevel = 9;
 
+    SteadyCanvasScript steadyScript;
 
-    string keyboardMsg = "Press 'Enter' \n to Start";
 
     // Use this for initialization
     void Start()
@@ -29,18 +30,20 @@ public class UIControllerScript : MonoBehaviour
         gameCanvas.SetActive(false);
 
         gameScript = game.GetComponent<Game>();
+        steadyScript = steadyCanvas.GetComponent<SteadyCanvasScript>();
     }
 
 
 
 
-    public void BeginExperiment(string sid, string ecid, int gameType, int inputType)
+    public void BeginExperiment(string sid, string ecid, int gameType, int newInput)
     {
 
         if (!string.IsNullOrEmpty(sid) && !string.IsNullOrEmpty(ecid))
         {
             Settings.subjectID = sid;
             Settings.ECID = ecid;
+            Settings.inpt = (InputType)newInput;
 
             switch (gameType)
             {
@@ -58,66 +61,19 @@ public class UIControllerScript : MonoBehaviour
                     break;
             }
 
-
-            switch (inputType)
-            {
-                case 0:
-                    gameScript.useKeyboard = true;
-                    gameScript.useTomee = false;
-                    gameScript.useRetro = false;
-                    break;
-                case 1:
-                    gameScript.useKeyboard = false;
-                    gameScript.useTomee = true;
-                    gameScript.useRetro = false;
-                    break;
-                case 2:
-                    gameScript.useKeyboard = false;
-                    gameScript.useTomee = false;
-                    gameScript.useRetro = true;
-                    break;
-            }
-
-
             //todo: do lvl
             //startLevel = System.Int32.Parse(lvl);
             //startLevel = Mathf.Clamp(startLevel, 0, 29);
 
             readyCanvas.SetActive(false);
             steadyCanvas.SetActive(true);
-
-
+            steadyScript.UpdateCaptions();
         }
     }
 
 
-    public void StartGame(InputType inputType)
+    public void StartGame()
     {
-
-        switch (inputType)
-        {
-            case InputType.keyboard:
-
-                gameScript.useKeyboard = true;
-                gameScript.useTomee = false;
-                gameScript.useRetro = false;
-                break;
-
-            case InputType.converted:
-
-                gameScript.useKeyboard = false;
-                gameScript.useTomee = true;
-                gameScript.useRetro = false;
-                break;
-
-            case InputType.retropad:
-
-                gameScript.useKeyboard = false;
-                gameScript.useTomee = false;
-                gameScript.useRetro = true;
-                break;
-        }
-
         steadyCanvas.SetActive(false);
 
         game.SetActive(true);
@@ -142,7 +98,7 @@ public class UIControllerScript : MonoBehaviour
         nextLine.SetActive(false);
 
         steadyCanvas.SetActive(true);
-        steadyCanvas.GetComponent<SteadyCanvasScript>().SetScore(score);
+        steadyScript.SetScore(score);
     }
 
     public void FinishExperiment()

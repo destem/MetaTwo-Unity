@@ -25,7 +25,6 @@ public class ReadyCanvasScript : MonoBehaviour
 
     private void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
@@ -40,4 +39,5 @@ public class ReadyCanvasScript : MonoBehaviour
                                  inputController.GetComponent<UnityEngine.UI.Dropdown>().value
                                 );
     }
+
 }

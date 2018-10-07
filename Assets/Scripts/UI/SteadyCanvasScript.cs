@@ -3,44 +3,39 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum InputType {keyboard, converted, retropad };
-
 
 //todo: make canvas for lvl
 
-public class SteadyCanvasScript : MonoBehaviour {
+public class SteadyCanvasScript : MonoBehaviour
+{
 
     public GameObject uiController;
     public UnityEngine.UI.Text textScore;
+    public UnityEngine.UI.Text textStart;
+    public UnityEngine.UI.Text textControls;
 
     UIControllerScript uiContrl;
 
 
-
-
-
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         uiContrl = uiController.GetComponent<UIControllerScript>();
     }
-	
-	// Update is called once per frame
-	void Update () {
 
-        if (Input.GetKeyDown(KeyCode.Return))
+    // Update is called once per frame
+    void Update()
+    {
+        if (Settings.inpt == InputType.keyboard && Input.GetKeyDown(KeyCode.Return))
         {
-            uiContrl.StartGame(InputType.keyboard);
+            uiContrl.StartGame();
         }
-        else if (Input.GetKeyDown("joystick button 0"))
+        else if (Input.GetKeyDown("joystick button 0") || Input.GetKeyDown("joystick button 1"))
         {
-            uiContrl.StartGame(InputType.converted);
+            uiContrl.StartGame();
         }
-        else if (Input.GetKeyDown("joystick button 1"))
-        {
-            uiContrl.StartGame(InputType.retropad);
-        }
+
     }
-
 
 
     public void ButtonFinishExpClick()
@@ -54,4 +49,19 @@ public class SteadyCanvasScript : MonoBehaviour {
         textScore.text = "Last Score: " + score;
     }
 
+
+    public void UpdateCaptions()
+    {
+        if (Settings.inpt == InputType.keyboard)
+        {
+            textStart.text = "Press 'Enter'\nto Start";
+            textControls.enabled = true;
+        }
+        else
+        {
+            textStart.text = "Press 'A' Button\nto Start";
+            textControls.enabled = false;
+        }
+
+    }
 }
