@@ -4,44 +4,39 @@ using UnityEngine;
 
 
 
-public class GameTask : MonoBehaviour {
+/* TODO: Will extend this class in future to manage different game settings,
+        along with an ExpSettings class for different exp. setups.
+ */
+public class GameTask : MonoBehaviour
+{
 
     Game game;
 
-    //how long the game should be played in seconds.
-    // playtime = 0  ->  no time limit.
-    int playTime;
-    int startLevel;
-
     bool active = false;
 
-	void Start () {
-        game = GetComponent<Game>();	
-	}
-	
-    public void StartTask (int newPlayTime, int newStartLevel)
+    void Start()
     {
-        this.playTime = newPlayTime;
-        this.startLevel = newStartLevel;
+        game = GetComponent<Game>();
+    }
+
+    public void StartTask()
+    {
         active = true;
-        this.game.Reset();
     }
 
 
 
     void Update()
     {
-        if (active)
+        if (active && Settings.sessionTime > 0)
         {
-
-            if (playTime > 0)
+            if (Settings.sessionTime < Time.time - Settings.startTime)
             {
-                if (playTime < Time.time - game.gameStartTime)
-                {
-                    game.GameOver();
-                }
+                game.GameOver();
+                active = false;
             }
         }
+
     }
 
 }

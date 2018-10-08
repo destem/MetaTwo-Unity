@@ -117,8 +117,8 @@ public class Log : MonoBehaviour {
         logit(game.score.ToString(), "score");
         logit(game.lines.ToString(), "lines_cleared");
         logit(complete.ToString(), "completed");
-        logit((Time.time - game.gameStartTime).ToString(), "game_duration");
-        logit(((Time.time - game.gameStartTime) / (game.episode + 1)).ToString(), "avg_ep_duration");
+        logit((Time.time - Settings.startTime).ToString(), "game_duration");
+        logit(((Time.time - Settings.startTime) / (game.episode + 1)).ToString(), "avg_ep_duration");
         //comes in GAME_SUMM and looks like"
         // '["T", "Z", "O", "O", "T", "I", "T", "Z", "L", "I", "I", "O", "S", "Z", "T"]'
         logit("[" + string.Join(",", game.zoidBuff.ToArray()) + "]", "zoid_sequence");

@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-
+using UnityEngine.UI;
 
 
 
@@ -17,7 +16,6 @@ public class UIControllerScript : MonoBehaviour
     public GameObject game;
 
     Game gameScript;
-    int startLevel = 9;
 
     SteadyCanvasScript steadyScript;
 
@@ -34,40 +32,37 @@ public class UIControllerScript : MonoBehaviour
     }
 
 
-
-
-    public void BeginExperiment(string sid, string ecid, int gameType, int newInput)
+    public void BeginExperiment(string sid, string ecid, Dropdown gameType, int inType)
     {
-
         if (!string.IsNullOrEmpty(sid) && !string.IsNullOrEmpty(ecid))
         {
             Settings.subjectID = sid;
             Settings.ECID = ecid;
-            Settings.inpt = (InputType)newInput;
 
-            switch (gameType)
+            Settings.inpt = (InputType)inType;
+
+            Settings.gameType = gameType.options[gameType.value].text;
+            Settings.sessionTime = 0;
+            switch (gameType.value)
             {
                 case 0:
-                    Settings.gameType = "Key Mashing";
+                    Settings.sessionTime = 120;
+                    Settings.startLevel = 0;
                     break;
                 case 1:
-                    Settings.gameType = "9 till Die";
+                    Settings.startLevel = 9;
                     break;
                 case 2:
-                    Settings.gameType = "0 till Die";
+                    Settings.startLevel = 0;
                     break;
                 case 3:
-                    Settings.gameType = "pick till Die";
+                    Settings.startLevel = 0;
                     break;
             }
 
-            //todo: do lvl
-            //startLevel = System.Int32.Parse(lvl);
-            //startLevel = Mathf.Clamp(startLevel, 0, 29);
-
+            steadyScript.AdjustLayout(gameType.value);
             readyCanvas.SetActive(false);
             steadyCanvas.SetActive(true);
-            steadyScript.UpdateCaptions();
         }
     }
 
@@ -80,8 +75,15 @@ public class UIControllerScript : MonoBehaviour
         line.SetActive(true);
         nextLine.SetActive(true);
 
-        gameScript.startlevel = startLevel;
         gameCanvas.SetActive(true);
+
+        if (Settings.sessionTime > 0)
+        {
+            game.GetComponent<GameTask>().StartTask();
+            Debug.Log("active");
+        }
+
+        Settings.startTime = Time.time;
         gameScript.Reset();
     }
 
@@ -105,6 +107,11 @@ public class UIControllerScript : MonoBehaviour
     {
         steadyCanvas.SetActive(false);
         readyCanvas.SetActive(true);
+    }
+
+    public void SetStartLvl(Dropdown drop)
+    {
+        Settings.startLevel = drop.value;
     }
 
 }

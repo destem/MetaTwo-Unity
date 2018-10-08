@@ -60,12 +60,10 @@ public class Game : MonoBehaviour
     int vx = 0;
     int vy = 0;
     int vr = 0;
-    public float gameStartTime;
 
     int das = 0;
     int softdrop_timer = 0;
     int drop = 0;
-    public int startlevel;
 
     public int level = 0;
     public int lines = 0;
@@ -196,7 +194,6 @@ public class Game : MonoBehaviour
         frames = 0;
         alive = true;
         paused = false;
-        gameStartTime = Time.time;
         cam.backgroundColor = darkBackgroundColor;
 
         are = 0;
@@ -209,7 +206,7 @@ public class Game : MonoBehaviour
         softdrop_timer = 0;
         drop = 0;
 
-        level = startlevel;
+        level = Settings.startLevel;
         lines = 0;
         score = 0;
         episode = 0;
@@ -269,6 +266,11 @@ public class Game : MonoBehaviour
         musicSystem.clip = clips[(int)soundEnum.music];
         musicSystem.Play();
 
+    }
+
+    void Start()
+    {
+        
     }
 
     // Update is called once per frame

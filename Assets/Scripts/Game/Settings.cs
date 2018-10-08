@@ -15,7 +15,8 @@ public static class Settings
     public static string session = "";
     public static int startLevel = 0;
     public static string gameType = "standard";
-    public static int sessionTime = 300; // total time, in seconds, for this experimental session. 1 hour = 3600 seconds
+    public static float startTime;
+    public static int sessionTime = 0; // total time, in seconds, for this experimental session. 1 hour = 3600 seconds
     public static int seed = -1; // seed for RNG. -1 means use the current time
 
     public static InputType inpt = InputType.keyboard;
@@ -25,7 +26,7 @@ public static class Settings
 //TODO: work in progress, split settings
 public static class TaskSettings
 {
-    public static string startTime;
+    public static float startTime;
     public static string subjectID = "no_val";
     public static string ECID = "no_val";
     public static string session = "";
@@ -47,7 +48,8 @@ public static class GameSettings
     public static InputType inpt = InputType.keyboard;
 }
 
-
 //TODO: gameStatistics
+
+
 
 //second git test

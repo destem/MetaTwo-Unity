@@ -1,17 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class ReadyCanvasScript : MonoBehaviour
 {
     public GameObject uiController;
 
-    public GameObject inputLevel;
-    public GameObject inputSID;
-    public GameObject inputECID;
-    public GameObject inputGameType;
-    public GameObject inputController;
+    public InputField inputLevel;
+    public InputField inputSID;
+    public InputField inputECID;
+    public Dropdown inputGameType;
+    public Dropdown inputController;
 
     UIControllerScript uiContrl;
 
@@ -33,11 +34,9 @@ public class ReadyCanvasScript : MonoBehaviour
 
     public void BeginButtonClick()
     {
-        uiContrl.BeginExperiment(inputSID.GetComponent<UnityEngine.UI.InputField>().text,
-                                inputECID.GetComponent<UnityEngine.UI.InputField>().text,
-                                inputGameType.GetComponent<UnityEngine.UI.Dropdown>().value,
-                                 inputController.GetComponent<UnityEngine.UI.Dropdown>().value
-                                );
+        uiContrl.BeginExperiment(inputSID.text, inputECID.text,
+                                    inputGameType, inputController.value);
     }
+
 
 }
