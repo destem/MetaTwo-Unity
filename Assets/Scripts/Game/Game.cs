@@ -64,6 +64,7 @@ public class Game : MonoBehaviour
     int das = 0;
     int softdrop_timer = 0;
     int drop = 0;
+    public int startlevel;
 
     public int level = 0;
     public int lines = 0;
@@ -96,7 +97,6 @@ public class Game : MonoBehaviour
     bool invertCurr;
     bool invertPrev;
     bool fastMusic = false;
-    public int gameNumber = 1;
     List<int> rowsToClear = new List<int>();
     public Log log;
     public StreamWriter writer;
@@ -188,6 +188,7 @@ public class Game : MonoBehaviour
         //print(Application.persistentDataPath);
         System.DateTime timestamp = System.DateTime.Now;
         writer = new StreamWriter(Application.persistentDataPath + "/" + string.Format("{0}_{1}", Settings.subjectID, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + ".tsv", true);
+        log.LogExpHeader();
         writer.WriteLine(log.logHeader);
         board = new Board();
         dummyboard = new Board();
@@ -270,39 +271,42 @@ public class Game : MonoBehaviour
 
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
         Poll();
-        //
-        if (JustPressed(keyEnum.Pause) && (!paused))
-        {
-            paused = true;
-            musicSystem.Stop();
-            soundSystem.PlayOneShot(clips[(int)soundEnum.pause], 1f);
-        }
-        else if (JustPressed(keyEnum.Pause) && (paused))
-        {
-            paused = false;
-            musicSystem.Play();
-        }
-        if (JustPressed(keyEnum.Invert) && (!inverted))
-        {
-            inverted = true;
-            // invertris? lines don't quite work perfectly
-            transform.localScale = new Vector3(1f, -1f, 1f);
-            transform.position = new Vector3(0f, 0.06f, 0f);
-        }
-        else if (JustPressed(keyEnum.Invert) && (inverted))
-        {
-            inverted = false;
-            transform.localScale = Vector3.one;
-            transform.position = Vector3.zero;
-        }
-        //
+
+        //TODO: disabled for CTWC, enable later as a settings - option
+        //if (JustPressed(keyEnum.Pause) && (!paused))
+        //{
+        //    paused = true;
+        //    musicSystem.Stop();
+        //    soundSystem.PlayOneShot(clips[(int)soundEnum.pause], 1f);
+        //}
+        //else if (JustPressed(keyEnum.Pause) && (paused))
+        //{
+        //    paused = false;
+        //    musicSystem.Play();
+        //}
+        //if (JustPressed(keyEnum.Invert) && (!inverted))
+        //{
+        //    // invertris? lines don't quite work perfectly
+        //    //todo: when switching back, the lines are off
+
+        //    inverted = true;
+        //    transform.localScale = new Vector3(1f, -1f, 1f);
+        //    transform.position = new Vector3(0f, 0.06f, 0f);
+        //}
+        //else if (JustPressed(keyEnum.Invert) && (inverted))
+        //{
+        //    inverted = false;
+        //    transform.localScale = Vector3.one;
+        //    transform.position = Vector3.zero;
+        //}
+
         if (alive && !paused)
         {
             Sub_94ee(); // a housekeeping function, named after its original ROM address

@@ -26,6 +26,8 @@ public class UIControllerScript : MonoBehaviour
         readyCanvas.SetActive(true);
         steadyCanvas.SetActive(false);
         gameCanvas.SetActive(false);
+        line.SetActive(false);
+        nextLine.SetActive(false);
 
         gameScript = game.GetComponent<Game>();
         steadyScript = steadyCanvas.GetComponent<SteadyCanvasScript>();

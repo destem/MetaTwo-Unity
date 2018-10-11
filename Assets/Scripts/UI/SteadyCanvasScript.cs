@@ -73,6 +73,7 @@ public class SteadyCanvasScript : MonoBehaviour
         bool chooseLvl = (gameType == 3);
         dropDown_startLvl.gameObject.SetActive(chooseLvl);
         textStartLvl.enabled = chooseLvl;
+        dropDown_startLvl.value = Settings.startLevel;
     }
 
 }

@@ -19,7 +19,8 @@ public class EyetrackLogline
     public string BPOGV;
 }
 
-public class Log : MonoBehaviour {
+public class Log : MonoBehaviour
+{
 
     List<string> data = new List<string>();
     List<char> nextZoids = new List<char>();
@@ -42,7 +43,7 @@ public class Log : MonoBehaviour {
     public string logHeader;
     string[] loglist;
     public Game game;
-    public string eyetrackString= "";
+    public string eyetrackString = "";
     EyetrackLogline eyetrackingLogline = new EyetrackLogline();
     char[] separatingChars = { ' ', '=', '"' };
 
@@ -56,7 +57,8 @@ public class Log : MonoBehaviour {
 
 
 
-    public void Awake(){
+    public void Awake()
+    {
         logHeader = string.Join("\t", logHeaderArray);
 
     }
@@ -85,6 +87,32 @@ public class Log : MonoBehaviour {
         return (outString);
     }
 
+
+    public void LogExpHeader()
+    {
+        game.writer.WriteLine("Meta-Two build\t" + System.IO.File.GetLastWriteTime(System.Reflection.Assembly.GetExecutingAssembly().Location));
+        game.writer.WriteLine("Game Start\t" + System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
+        long tick;
+        QueryPerformanceCounter(out tick);
+        game.writer.WriteLine("GameStart Tick\t" + tick);
+        QueryPerformanceFrequency(out tick);
+        game.writer.WriteLine("CPU Tick Frequency\t" + tick);
+        game.writer.WriteLine("SID\t" + Settings.subjectID);
+        game.writer.WriteLine("ECID\t" + Settings.ECID);
+        game.writer.WriteLine("GameTask\t" + Settings.gameType);
+        game.writer.WriteLine("Session\t" + Settings.session);
+        game.writer.WriteLine("GameNr.\t" + Settings.gameNumber);
+        game.writer.WriteLine("randSeed\t" + Settings.randomSeed);
+        game.writer.WriteLine("seed\t" + Settings.seed);
+        game.writer.WriteLine("Screen resolution\t" + Screen.currentResolution);
+        game.writer.WriteLine("Screen dpi\t" + Screen.dpi);
+        game.writer.WriteLine("Fullscreen\t" + Screen.fullScreen.ToString());
+        game.writer.WriteLine("Window height\t" + Screen.height);
+        game.writer.WriteLine("Window width\t" + Screen.width);
+        //game.writer.WriteLine("\t" +);
+        //game.writer.WriteLine("\t" +);
+    }
+
     void logit(string val, string key)
     {
         if (loglist.Contains(key))
@@ -111,7 +139,7 @@ public class Log : MonoBehaviour {
         logit(Settings.ECID, "ECID");
         logit(Settings.session, "session");
         logit(Settings.gameType, "game_type");
-        logit(game.gameNumber.ToString(), "game_number");
+        logit(Settings.gameNumber.ToString(), "game_number");
         logit(game.episode.ToString(), "episode_number");
         logit(game.level.ToString(), "level");
         logit(game.score.ToString(), "score");
@@ -122,7 +150,7 @@ public class Log : MonoBehaviour {
         //comes in GAME_SUMM and looks like"
         // '["T", "Z", "O", "O", "T", "I", "T", "Z", "L", "I", "I", "O", "S", "Z", "T"]'
         logit("[" + string.Join(",", game.zoidBuff.ToArray()) + "]", "zoid_sequence");
-        if (evtID != "") 
+        if (evtID != "")
         {
             data.Add(evtID);
         }
@@ -152,7 +180,8 @@ public class Log : MonoBehaviour {
         {
             logit(Zoid.names[game.next].ToString(), "next_zoid");
         }
-        else {
+        else
+        {
             nextZoids.Clear();
             for (int i = 0; i < game.previewZoidQueue.Count; i++)
             {
@@ -192,7 +221,7 @@ public class Log : MonoBehaviour {
 
     public void LogEpisode()
     {
-        loglist = episodeList; 
+        loglist = episodeList;
         LogUniversal("EP_SUMM");
         game.writer.Flush();
     }
