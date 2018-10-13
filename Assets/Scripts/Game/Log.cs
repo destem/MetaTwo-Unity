@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.IO;
 
 public class EyetrackLogline
 {
@@ -27,7 +28,7 @@ public class Log : MonoBehaviour
     string masterLog = "";
     string[] logHeaderArray = {"ts","system_ticks", "event_type", "SID","ECID","session","game_type","game_number","episode_number","level","score","lines_cleared",
         "completed","game_duration","avg_ep_duration","zoid_sequence","evt_id","evt_data1","evt_data2",
-        "curr_zoid","next_zoid","board_rep","zoid_rep", "eye_tracker_time", "eye_time_tick", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY","BPOGV"};
+        "curr_zoid","next_zoid","board_rep","zoid_rep"};
     string[] gameStateList = { "SID","ECID","session","game_type","game_number","episode_number",
     "level","score","lines_cleared","curr_zoid", "next_zoid", "board_rep","zoid_rep" };
     string[] episodeList = { "SID","ECID","session","game_type","game_number","episode_number",
@@ -49,10 +50,10 @@ public class Log : MonoBehaviour
 
 
     [DllImport("Kernel32.dll")]
-    private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
+    public static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
 
     [DllImport("Kernel32.dll")]
-    private static extern bool QueryPerformanceFrequency(
+    public static extern bool QueryPerformanceFrequency(
         out long lpFrequency);
 
 
@@ -61,6 +62,27 @@ public class Log : MonoBehaviour
     {
         logHeader = string.Join("\t", logHeaderArray);
 
+        string path;
+        // on mac/windows builds, log folder is created besides the .exe / .app
+        switch (Application.platform)
+        {
+            case RuntimePlatform.WindowsPlayer:
+                path = Path.GetDirectoryName(Application.dataPath);
+                // alternative: path += "/..";
+                break;
+
+            case RuntimePlatform.OSXPlayer:
+                path = Path.GetDirectoryName(Path.GetDirectoryName(Application.dataPath));
+                break;
+
+            default:
+                path = Application.persistentDataPath;
+                break;
+        }
+
+        path += "/Logs";
+        Directory.CreateDirectory(path);
+        Settings.logDir = path;
     }
 
 
@@ -102,8 +124,8 @@ public class Log : MonoBehaviour
         game.writer.WriteLine("GameTask\t" + Settings.gameType);
         game.writer.WriteLine("Session\t" + Settings.session);
         game.writer.WriteLine("GameNr.\t" + Settings.gameNumber);
+        game.writer.WriteLine("Input type\t" + Settings.inpt);
         game.writer.WriteLine("randSeed\t" + Settings.randomSeed);
-        game.writer.WriteLine("seed\t" + Settings.seed);
         game.writer.WriteLine("Screen resolution\t" + Screen.currentResolution);
         game.writer.WriteLine("Screen dpi\t" + Screen.dpi);
         game.writer.WriteLine("Fullscreen\t" + Screen.fullScreen.ToString());
@@ -242,7 +264,6 @@ public class Log : MonoBehaviour
 
     public void LogEyeTracker()
     {
-        // TODO: process eyetrackingLogline from eyetrackString;
         // eyetrackString looks like:
         // <REC TIME="38.41262" FPOGX="0.41352" FPOGY="0.80682" FPOGS="38.36427" FPOGD="0.04835" FPOGID="93" FPOGV="1" BPOGX="0.43701" BPOGY="0.81848" BPOGV="1" />
         string[] eye = eyetrackString.Split(separatingChars);

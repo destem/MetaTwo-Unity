@@ -158,7 +158,7 @@ public class Game : MonoBehaviour
                 rend.sprite = boardSprites[0];
                 nextSprites[j, i] = go;
                 nextRenderers[j, i] = rend;
-                go.transform.position = new Vector3(i * board.spacing, -j * board.spacing, 0f); // -j to work down
+                go.transform.position = new Vector3((i + 3) * board.spacing, -j * board.spacing, 0f); // -j to work down
                 go.transform.parent = nextSpriteParent.transform;
             }
         }
@@ -185,9 +185,9 @@ public class Game : MonoBehaviour
     // Use this for initialization
     public void Reset()
     {
-        //print(Application.persistentDataPath);
         System.DateTime timestamp = System.DateTime.Now;
-        writer = new StreamWriter(Application.persistentDataPath + "/" + string.Format("{0}_{1}", Settings.subjectID, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + ".tsv", true);
+        writer = new StreamWriter(Settings.logDir + "/"
+                   + string.Format("{0}_{1}", Settings.subjectID, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + "_game.tsv", true);
         log.LogExpHeader();
         writer.WriteLine(log.logHeader);
         board = new Board();
@@ -322,6 +322,19 @@ public class Game : MonoBehaviour
             log.LogWorld();
         }
         RenderBoard();
+
+
+        foreach (keyEnum key in System.Enum.GetValues(typeof(keyEnum)))
+        {
+            if (JustPressed(key))
+            {
+                log.LogEvent("PLAYER", "KEY_DOWN", key.ToString());
+            } else if (JustReleased(key))
+            {
+                log.LogEvent("PLAYER", "KEY_UP", key.ToString());
+            }
+        }
+
     }
 
     // Possibly the most delicate and important function in the game, translating user input into game commands.
@@ -389,6 +402,7 @@ public class Game : MonoBehaviour
                 }
             }
         }
+
 
         if (JustPressed(keyEnum.Rotate))
         {
@@ -540,7 +554,6 @@ public class Game : MonoBehaviour
         log.LogGameSumm();
         writer.Close();
 
-        //todo:display score
         uiContrl.FinishGame();
     }
 
@@ -906,6 +919,35 @@ public class Game : MonoBehaviour
         return false;
     }
 
+    bool JustReleased(keyEnum k)
+    {
+        switch (k)
+        {
+            case keyEnum.Left:
+                if ((!leftCurr && leftPrev)) { return true; }
+                break;
+            case keyEnum.Right:
+                if ((!rightCurr && rightPrev)) { return true; }
+                break;
+            case keyEnum.Down:
+                if ((!downCurr && downPrev)) { return true; }
+                break;
+            case keyEnum.Pause:
+                if ((!pauseCurr && pausePrev)) { return true; }
+                break;
+            case keyEnum.Rotate:
+                if ((!rotateCurr && rotatePrev)) { return true; }
+                break;
+            case keyEnum.Counterrotate:
+                if ((!counterRotateCurr && counterRotatePrev)) { return true; }
+                break;
+            case keyEnum.Invert:
+                if ((!invertCurr && invertPrev)) { return true; }
+                break;
+        }
+        return false;
+    }
+
     bool OnlyDownHit()
     {
         if (JustPressed(keyEnum.Down) &&
@@ -978,30 +1020,35 @@ public class Game : MonoBehaviour
                     }
                 }
             }
+
             // zoid
             Coordinates blocks = zoid.GetBlocks();
-            for (int i = 0; i < 4; i++)
+            //does not render zoid during line animation, as it is already gone by then 
+            if (currentTask != LineAnim)
             {
-                if (blocks.coords[i, 1] >= 0)
+                for (int i = 0; i < 4; i++)
                 {
-                    rend = spriteRenderers[blocks.coords[i, 1], blocks.coords[i, 0]];
-                    switch (zoid.style)
+                    if (blocks.coords[i, 1] >= 0)
                     {
-                        case 0:
-                            rend.color = Color.white;
-                            rend.sprite = boardSprites[3 * (level % 10)];
-                            rend.enabled = true;
-                            break;
-                        case 1:
-                            rend.color = Color.white;
-                            rend.sprite = boardSprites[3 * (level % 10) + 1];
-                            rend.enabled = true;
-                            break;
-                        case 2:
-                            rend.color = Color.white;
-                            rend.sprite = boardSprites[3 * (level % 10) + 2];
-                            rend.enabled = true;
-                            break;
+                        rend = spriteRenderers[blocks.coords[i, 1], blocks.coords[i, 0]];
+                        switch (zoid.style)
+                        {
+                            case 0:
+                                rend.color = Color.white;
+                                rend.sprite = boardSprites[3 * (level % 10)];
+                                rend.enabled = true;
+                                break;
+                            case 1:
+                                rend.color = Color.white;
+                                rend.sprite = boardSprites[3 * (level % 10) + 1];
+                                rend.enabled = true;
+                                break;
+                            case 2:
+                                rend.color = Color.white;
+                                rend.sprite = boardSprites[3 * (level % 10) + 2];
+                                rend.enabled = true;
+                                break;
+                        }
                     }
                 }
             }
@@ -1057,7 +1104,7 @@ public class Game : MonoBehaviour
                 }
             }
 
-            scoreText.text = string.Format("Score: {0}\nLines: {1}\nLevel: {2}", score, lines, level);
+            scoreText.text = string.Format("Score\n{0}\n\nLines\n{1}\n\nLevel\n{2}", score, lines, level);
         }
         else
         {

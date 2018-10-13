@@ -15,10 +15,11 @@ public class UIControllerScript : MonoBehaviour
     public GameObject nextLine;
     public GameObject game;
 
+    public GameObject eyeTracker;
+
     Game gameScript;
-
     SteadyCanvasScript steadyScript;
-
+    EyeTrackerScript eyeScript;
 
     // Use this for initialization
     void Start()
@@ -31,6 +32,7 @@ public class UIControllerScript : MonoBehaviour
 
         gameScript = game.GetComponent<Game>();
         steadyScript = steadyCanvas.GetComponent<SteadyCanvasScript>();
+        eyeScript = eyeTracker.GetComponent<EyeTrackerScript>();
     }
 
 
@@ -65,6 +67,7 @@ public class UIControllerScript : MonoBehaviour
             steadyScript.AdjustLayout(gameType.value);
             readyCanvas.SetActive(false);
             steadyCanvas.SetActive(true);
+            eyeScript.startNewLog();
         }
     }
 
@@ -82,10 +85,10 @@ public class UIControllerScript : MonoBehaviour
         if (Settings.sessionTime > 0)
         {
             game.GetComponent<GameTask>().StartTask();
-            Debug.Log("active");
         }
 
         Settings.startTime = Time.time;
+
         gameScript.Reset();
     }
 
@@ -93,6 +96,10 @@ public class UIControllerScript : MonoBehaviour
     public void FinishGame()
     {
         int score = gameScript.score;
+
+        long tick;
+        Log.QueryPerformanceCounter(out tick);
+        eyeScript.ketchUp(tick);
 
         gameScript.ClearBoard();
         game.SetActive(false);

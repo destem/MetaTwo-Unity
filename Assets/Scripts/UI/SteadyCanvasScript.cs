@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 
 
-//todo: make canvas for lvl
-
 public class SteadyCanvasScript : MonoBehaviour
 {
 
