@@ -128,7 +128,7 @@ public class Log : MonoBehaviour
         game.writer.WriteLine("randSeed\t" + Settings.randomSeed);
         game.writer.WriteLine("Screen resolution\t" + Screen.currentResolution);
         game.writer.WriteLine("Screen dpi\t" + Screen.dpi);
-        game.writer.WriteLine("Fullscreen\t" + Screen.fullScreen.ToString());
+        game.writer.WriteLine("Fullscreen\t" + Screen.fullScreen);
         game.writer.WriteLine("Window height\t" + Screen.height);
         game.writer.WriteLine("Window width\t" + Screen.width);
         //game.writer.WriteLine("\t" +);

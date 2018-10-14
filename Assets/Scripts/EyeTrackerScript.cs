@@ -10,6 +10,54 @@ public enum EyeData { ETT, TIMETICK, FPOGX, FPOGY, FPOGS, FPOGD, FPOGID, FPOGV, 
 public class EyeTrackerScript : MonoBehaviour
 {
 
+    public static class GazeMsg
+    {
+        public static string display_show = "<SET ID=\"TRACKER_DISPLAY\" STATE=\"1\" />\r\n";
+        public static string display_hide = "<SET ID=\"TRACKER_DISPLAY\" STATE=\"0\" />\r\n";
+
+        public static string enable_time = "<SET ID=\"ENABLE_SEND_TIME\" STATE=\"1\" />\r\n";
+        public static string enable_tick = "<SET ID=\"ENABLE_SEND_TIME_TICK\" STATE=\"1\" />\r\n";
+        public static string enable_pogFix = "<SET ID=\"ENABLE_SEND_POG_FIX\" STATE=\"1\" />\r\n";
+
+        public static string enable_pogLeft = "<SET ID=\"ENABLE_SEND_POG_LEFT\" STATE=\"1\" />\r\n";
+        public static string enable_pogRight = "<SET ID=\"ENABLE_SEND_POG_RIGHT\" STATE=\"1\" />\r\n";
+        public static string enable_pogBest = "<SET ID=\"ENABLE_SEND_POG_BEST\" STATE=\"1\" />\r\n";
+
+        public static string enable_pupilLeft = "<SET ID=\"ENABLE_SEND_PUPIL_LEFT\" STATE=\"1\" />\r\n";
+        public static string enable_pupilRight = "<SET ID=\"ENABLE_SEND_PUPIL_RIGHT\" STATE=\"1\" />\r\n";
+
+        public static string enable_eyeLeft = "<SET ID=\"ENABLE_SEND_EYE_LEFT\" STATE=\"1\" />\r\n";
+        public static string enable_eyeRight = "<SET ID=\"ENABLE_SEND_EYE_RIGHT\" STATE=\"1\" />\r\n";
+
+        public static string enable_Cursor = "<SET ID=\"ENABLE_SEND_CURSOR\" STATE=\"1\" />\r\n";
+
+        public static string data_send = "<SET ID=\"ENABLE_SEND_DATA\" STATE=\"1\" />\r\n";
+        public static string data_halt = "<SET ID=\"ENABLE_SEND_DATA\" STATE=\"0\" />\r\n";
+
+        public static string calibration_show = "<SET ID=\"CALIBRATE_SHOW\" STATE=\"1\" />\r\n";
+        public static string calibration_start = "<SET ID=\"CALIBRATE_START\" STATE=\"1\" />\r\n";
+        public static string calibration_getPts = "<GET ID=\"CALIBRATE_ADDPOINT\" />\r\n";
+
+        public static string tickfrequency_get = "<GET ID=\"TIME_TICK_FREQUENCY\" />\r\n";
+
+
+        public static string SetID(string id, bool enabled)
+        {
+            int val = 1;
+            if (!enabled)
+            {
+                val = 0;
+            }
+            return "<SET ID=\"" + id + "\" STATE=\"" + val + "\" />\r\n";
+        }
+
+        public static string getID(string id)
+        {
+            return "<GET ID=\"" + id + "\" />\r\n";
+        }
+    }
+
+
     TcpClient gazeSocket;
     NetworkStream gazeStream;
     StreamReader gazeReader;
@@ -78,8 +126,8 @@ public class EyeTrackerScript : MonoBehaviour
 
             eyeDataWriter = new StreamWriter(Settings.logDir + "/" + fileRootName + "_eye.tsv", true);
             eyeDataWriter.WriteLine(string.Join("\t", eyeHeader));
-            gazeWriter.Write("<GET ID=\"TIME_TICK_FREQUENCY\" />\r\n");
-            gazeWriter.Write("<GET ID=\"CALIBRATE_ADDPOINT\" />\r\n");
+            gazeWriter.Write(GazeMsg.tickfrequency_get);
+            gazeWriter.Write(GazeMsg.calibration_getPts);
             gazeWriter.Flush();
         }
     }
@@ -95,25 +143,34 @@ public class EyeTrackerScript : MonoBehaviour
 
             gazeReader = new StreamReader(gazeStream);
 
-            gazeWriter.Write("<SET ID=\"ENABLE_SEND_TIME\" STATE=\"1\" />\r\n");
-            gazeWriter.Write("<SET ID=\"ENABLE_SEND_POG_FIX\" STATE=\"1\" />\r\n");
-            gazeWriter.Write("<SET ID=\"ENABLE_SEND_POG_BEST\" STATE=\"1\" />\r\n");
-            gazeWriter.Write("<SET ID=\"ENABLE_SEND_TIME_TICK\" STATE=\"1\" />\r\n");
-            gazeWriter.Write("<SET ID=\"ENABLE_SEND_DATA\" STATE=\"1\" />\r\n");
+            gazeWriter.Write(GazeMsg.enable_time);
+            gazeWriter.Write(GazeMsg.enable_tick);
+            gazeWriter.Write(GazeMsg.enable_pogFix);
+            gazeWriter.Write(GazeMsg.enable_pogBest);
+
+            gazeWriter.Write(GazeMsg.enable_pogRight);
+            gazeWriter.Write(GazeMsg.enable_pogLeft);
+            gazeWriter.Write(GazeMsg.enable_pupilLeft);
+            gazeWriter.Write(GazeMsg.enable_pupilRight);
+            gazeWriter.Write(GazeMsg.enable_eyeLeft);
+            gazeWriter.Write(GazeMsg.enable_eyeRight);
+
+            gazeWriter.Write(GazeMsg.data_send);
             gazeWriter.Flush();
 
             // Manual Calibration
-            gazeWriter.Write("<SET ID=\"TRACKER_DISPLAY\" STATE=\"0\" />\r\n");
+            //needs to hide the display first, in order to be able to maximize it after, in case display was in the background and not minimized
+            gazeWriter.Write(GazeMsg.display_hide);
             gazeWriter.Flush();
             System.Threading.Thread.Sleep(200);
-            gazeWriter.Write("<SET ID=\"TRACKER_DISPLAY\" STATE=\"1\" />\r\n");
+            gazeWriter.Write(GazeMsg.display_show);
             gazeWriter.Flush();
 
 
             //Automatic calibration setup: Shows calibration window and begins calibration
-            //gazeWriter.Write("<SET ID=\"CALIBRATE_SHOW\" STATE=\"1\" />\r\n");
-            //gazeWriter.Write("<SET ID=\"CALIBRATE_START\" STATE=\"1\" />\r\n");
-            //gazeWriter.Write("<SET ID=\"TRACKER_DISPLAY\" STATE=\"0\" />\r\n");
+            //gazeWriter.Write(GazeMsg.calibration_show);
+            //gazeWriter.Write(GazeMsg.calibration_start);
+            //gazeWriter.Write(GazeMsg.display_hide);
             //gazeWriter.Flush();
 
 
