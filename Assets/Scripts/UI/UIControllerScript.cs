@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 
 
@@ -10,6 +11,8 @@ public class UIControllerScript : MonoBehaviour
     public GameObject readyCanvas;
     public GameObject steadyCanvas;
     public GameObject gameCanvas;
+    public GameObject confirmCanvas;
+    public GameObject yesNoCanvas;
 
     public GameObject line;
     public GameObject nextLine;
@@ -19,24 +22,69 @@ public class UIControllerScript : MonoBehaviour
 
     Game gameScript;
     SteadyCanvasScript steadyScript;
+    ConfirmCanvasScript confirmScript;
+    YesNoCanvasScript yesNoScript;
     EyeTrackerScript eyeScript;
 
-    // Use this for initialization
-    void Start()
-    {
-        readyCanvas.SetActive(true);
-        steadyCanvas.SetActive(false);
-        gameCanvas.SetActive(false);
-        line.SetActive(false);
-        nextLine.SetActive(false);
+    static readonly string eyeTracker_connected = "Successfully connected to EyeTracking Device.";
+    static readonly string eyeTracker_noConnection = "EyeTracking Device not found. If you intend to collect eye-data," +
+                                                        " open GazePoint Control Center and restart Meta Two.";
 
+    static readonly string confirmExit = "Exit Study?";
+
+
+    void Awake()
+    {
         gameScript = game.GetComponent<Game>();
         steadyScript = steadyCanvas.GetComponent<SteadyCanvasScript>();
+        confirmScript = confirmCanvas.GetComponent<ConfirmCanvasScript>();
         eyeScript = eyeTracker.GetComponent<EyeTrackerScript>();
+        yesNoScript = yesNoCanvas.GetComponent<YesNoCanvasScript>();
+
+        string path;
+        // on mac/windows builds, log folder is created besides the .exe / .app
+        switch (Application.platform)
+        {
+            case RuntimePlatform.WindowsPlayer:
+                path = Path.GetDirectoryName(Application.dataPath);
+                // alternative: path += "/..";
+                break;
+
+            case RuntimePlatform.OSXPlayer:
+                path = Path.GetDirectoryName(Path.GetDirectoryName(Application.dataPath));
+                break;
+
+            default:
+                path = Application.persistentDataPath;
+                break;
+        }
+
+        path += "/Logs";
+        Directory.CreateDirectory(path);
+        Settings.logDir = path;
     }
 
 
-    public void BeginExperiment(string sid, string ecid, Dropdown gameType, int inType)
+
+    void Start()
+    {
+        string msg;
+
+        if (eyeScript.Connect())
+        {
+            msg = eyeTracker_connected;
+        }
+        else
+        {
+            msg = eyeTracker_noConnection;
+        }
+
+        GoTo(confirmCanvas);
+        confirmScript.NewMessage(msg, readyCanvas);
+    }
+
+
+    public void BeginExperiment(string sid, string ecid, int inType)
     {
         if (!string.IsNullOrEmpty(sid) && !string.IsNullOrEmpty(ecid))
         {
@@ -45,29 +93,37 @@ public class UIControllerScript : MonoBehaviour
 
             Settings.inpt = (InputType)inType;
 
-            Settings.gameType = gameType.options[gameType.value].text;
-            Settings.sessionTime = 0;
-            switch (gameType.value)
-            {
-                case 0:
-                    Settings.sessionTime = 120;
-                    Settings.startLevel = 0;
-                    break;
-                case 1:
-                    Settings.startLevel = 9;
-                    break;
-                case 2:
-                    Settings.startLevel = 0;
-                    break;
-                case 3:
-                    Settings.startLevel = 0;
-                    break;
-            }
+            GoTo(steadyCanvas);
+            steadyScript.ResetCanvasLayout();
+            steadyScript.AdjustInput(Settings.inpt);
 
-            steadyScript.AdjustLayout(gameType.value);
-            readyCanvas.SetActive(false);
-            steadyCanvas.SetActive(true);
+
+            //todo:abort on error, fix it
+            eyeScript.Calibrate(true);
             eyeScript.startNewLog();
+        }
+    }
+
+
+    public void SetGameTask(Dropdown gameTask)
+    {
+        Settings.gameType = gameTask.options[gameTask.value].text;
+        Settings.sessionTime = 0;
+        switch (gameTask.value)
+        {
+            case 0:
+                Settings.sessionTime = 120;
+                Settings.startLevel = 0;
+                break;
+            case 1:
+                Settings.startLevel = 9;
+                break;
+            case 2:
+                Settings.startLevel = 0;
+                break;
+            case 3:
+                Settings.startLevel = 0;
+                break;
         }
     }
 
@@ -95,32 +151,44 @@ public class UIControllerScript : MonoBehaviour
 
     public void FinishGame()
     {
-        int score = gameScript.score;
+        GoTo(confirmCanvas);
+        confirmScript.NewMessage("Score:\n" + gameScript.score + "\n\nLines cleared:\n" + gameScript.lines,steadyCanvas);
 
         long tick;
         Log.QueryPerformanceCounter(out tick);
+
+        //TODO: potential break of the game, if game restart too fast ... ketchup not done?
         eyeScript.ketchUp(tick);
 
         gameScript.ClearBoard();
         game.SetActive(false);
-
-        gameCanvas.SetActive(false);
-        line.SetActive(false);
-        nextLine.SetActive(false);
-
-        steadyCanvas.SetActive(true);
-        steadyScript.SetScore(score);
     }
 
-    public void FinishExperiment()
-    {
-        steadyCanvas.SetActive(false);
-        readyCanvas.SetActive(true);
-    }
 
     public void SetStartLvl(Dropdown drop)
     {
         Settings.startLevel = drop.value;
     }
 
+
+    public void ExitStudy()
+    {
+        GoTo(yesNoCanvas);
+        yesNoScript.setMsg(confirmExit);
+    }
+
+
+    public void GoTo(GameObject to)
+    {
+        readyCanvas.SetActive(false);
+        steadyCanvas.SetActive(false);
+        gameCanvas.SetActive(false);
+        yesNoCanvas.SetActive(false);
+        confirmCanvas.SetActive(false);
+
+        line.SetActive(false);
+        nextLine.SetActive(false);
+
+        to.SetActive(true);
+    }
 }

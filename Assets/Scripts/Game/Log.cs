@@ -61,28 +61,6 @@ public class Log : MonoBehaviour
     public void Awake()
     {
         logHeader = string.Join("\t", logHeaderArray);
-
-        string path;
-        // on mac/windows builds, log folder is created besides the .exe / .app
-        switch (Application.platform)
-        {
-            case RuntimePlatform.WindowsPlayer:
-                path = Path.GetDirectoryName(Application.dataPath);
-                // alternative: path += "/..";
-                break;
-
-            case RuntimePlatform.OSXPlayer:
-                path = Path.GetDirectoryName(Path.GetDirectoryName(Application.dataPath));
-                break;
-
-            default:
-                path = Application.persistentDataPath;
-                break;
-        }
-
-        path += "/Logs";
-        Directory.CreateDirectory(path);
-        Settings.logDir = path;
     }
 
 

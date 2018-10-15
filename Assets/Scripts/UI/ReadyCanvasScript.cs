@@ -34,8 +34,7 @@ public class ReadyCanvasScript : MonoBehaviour
 
     public void BeginButtonClick()
     {
-        uiContrl.BeginExperiment(inputSID.text, inputECID.text,
-                                    inputGameType, inputController.value);
+        uiContrl.BeginExperiment(inputSID.text, inputECID.text,inputController.value);
     }
 
 

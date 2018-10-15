@@ -8,7 +8,7 @@ public enum InputType { keyboard, converted, retropad };
 
 public static class Settings
 {
-    public static int numPreviewZoids = 3;
+    public static int numPreviewZoids = 1;
     public static string subjectID = "no_val";
     public static string ECID = "no_val";
     public static int startLevel = 0;

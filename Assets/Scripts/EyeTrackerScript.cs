@@ -109,6 +109,7 @@ public class EyeTrackerScript : MonoBehaviour
 
             while (gazeStream.DataAvailable && gameTick < tick && gazeReader != null && gazeStream != null)
             {
+                Debug.Log("has sumthin");
                 gameTick = logNextLine();
             }
             eyeDataWriter.Flush();
@@ -123,41 +124,74 @@ public class EyeTrackerScript : MonoBehaviour
         {
             string fileRootName = string.Format("{0}_{1}", Settings.subjectID, System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
 
+            //gazeReader.Read(buffer, 0, buffer.Length);
 
             eyeDataWriter = new StreamWriter(Settings.logDir + "/" + fileRootName + "_eye.tsv", true);
             eyeDataWriter.WriteLine(string.Join("\t", eyeHeader));
+
             gazeWriter.Write(GazeMsg.tickfrequency_get);
             gazeWriter.Write(GazeMsg.calibration_getPts);
+            gazeWriter.Write(GazeMsg.data_send);
+
             gazeWriter.Flush();
+
+            long tick;
+            Log.QueryPerformanceCounter(out tick);
+            ketchUp(tick);
         }
     }
 
 
-    public void ConnectToEyetrackerAndCalibrate()
+    public bool Connect()
     {
-        gazeSocket = new TcpClient("127.0.0.1", 4242);
-        if (gazeSocket != null)
+        try
         {
-            gazeStream = gazeSocket.GetStream();
-            gazeWriter = new StreamWriter(gazeStream);
+            gazeSocket = new TcpClient("127.0.0.1", 4242);
+            if (gazeSocket != null)
+            {
+                //buffer size in bytes set for 40mb 
+                gazeSocket.ReceiveBufferSize = 40000000;
+                gazeStream = gazeSocket.GetStream();
+                gazeWriter = new StreamWriter(gazeStream);
 
-            gazeReader = new StreamReader(gazeStream);
+                gazeReader = new StreamReader(gazeStream);
 
-            gazeWriter.Write(GazeMsg.enable_time);
-            gazeWriter.Write(GazeMsg.enable_tick);
-            gazeWriter.Write(GazeMsg.enable_pogFix);
-            gazeWriter.Write(GazeMsg.enable_pogBest);
+                gazeWriter.Write(GazeMsg.enable_time);
+                gazeWriter.Write(GazeMsg.enable_tick);
+                gazeWriter.Write(GazeMsg.enable_pogFix);
+                gazeWriter.Write(GazeMsg.enable_pogBest);
 
-            gazeWriter.Write(GazeMsg.enable_pogRight);
-            gazeWriter.Write(GazeMsg.enable_pogLeft);
-            gazeWriter.Write(GazeMsg.enable_pupilLeft);
-            gazeWriter.Write(GazeMsg.enable_pupilRight);
-            gazeWriter.Write(GazeMsg.enable_eyeLeft);
-            gazeWriter.Write(GazeMsg.enable_eyeRight);
+                gazeWriter.Write(GazeMsg.enable_pogRight);
+                gazeWriter.Write(GazeMsg.enable_pogLeft);
+                gazeWriter.Write(GazeMsg.enable_pupilLeft);
+                gazeWriter.Write(GazeMsg.enable_pupilRight);
+                gazeWriter.Write(GazeMsg.enable_eyeLeft);
+                gazeWriter.Write(GazeMsg.enable_eyeRight);
+                gazeWriter.Write(GazeMsg.data_halt);
+                gazeWriter.Flush();
 
-            gazeWriter.Write(GazeMsg.data_send);
-            gazeWriter.Flush();
+                return true;
+                //this clears the buffer. Use with caution as fragments of half-written xlm message will still arive,
+                // if stream has not been halter prior to the clearance
+                //eyeReader.Read(buffer, 0, buffer.Length);
+            }
+            else
+            {
+                return false;
+            }
+        }catch ( SocketException e)
+        {
+            return false;
+        }
+    }
 
+
+
+    public void Calibrate(bool manualSetup)
+    {
+
+        if (manualSetup)
+        {
             // Manual Calibration
             //needs to hide the display first, in order to be able to maximize it after, in case display was in the background and not minimized
             gazeWriter.Write(GazeMsg.display_hide);
@@ -165,18 +199,14 @@ public class EyeTrackerScript : MonoBehaviour
             System.Threading.Thread.Sleep(200);
             gazeWriter.Write(GazeMsg.display_show);
             gazeWriter.Flush();
-
-
+        }
+        else
+        {
             //Automatic calibration setup: Shows calibration window and begins calibration
-            //gazeWriter.Write(GazeMsg.calibration_show);
-            //gazeWriter.Write(GazeMsg.calibration_start);
-            //gazeWriter.Write(GazeMsg.display_hide);
-            //gazeWriter.Flush();
-
-
-            //this clears the buffer. Use with caution as fragments of half-written xlm message will still arive,
-            // if stream has not been halter prior to the clearance
-            //eyeReader.Read(buffer, 0, buffer.Length);
+            gazeWriter.Write(GazeMsg.calibration_show);
+            gazeWriter.Write(GazeMsg.calibration_start);
+            gazeWriter.Write(GazeMsg.display_hide);
+            gazeWriter.Flush();
         }
     }
 
@@ -245,6 +275,11 @@ public class EyeTrackerScript : MonoBehaviour
         }
 
         return result;
+    }
+
+    bool connected()
+    {
+        return gazeSocket != null;
     }
 
 }

@@ -9,11 +9,13 @@ public class SteadyCanvasScript : MonoBehaviour
 {
 
     public GameObject uiController;
-    public Text textScore;
     public Text textStart;
     public Text textControls;
     public Text textStartLvl;
     public Dropdown dropDown_startLvl;
+    public Dropdown dropDown_gameTask;
+
+    public GameObject panel_startLvl;
 
     UIControllerScript uiContrl;
 
@@ -42,20 +44,15 @@ public class SteadyCanvasScript : MonoBehaviour
         }
     }
 
-
-    public void ButtonFinishExpClick()
+    public void ShowLvl(Dropdown gametask)
     {
-        uiContrl.FinishExperiment();
-        textScore.text = "";
-    }
-
-    public void SetScore(int score)
-    {
-        textScore.text = "Last Score: " + score;
+        bool chooseLvl = (gametask.value == 3);
+        panel_startLvl.SetActive(chooseLvl);
+        dropDown_startLvl.value = 0;
     }
 
 
-    public void AdjustLayout(int gameType)
+    public void AdjustInput(InputType inpt)
     {
         if (Settings.inpt == InputType.keyboard)
         {
@@ -67,11 +64,13 @@ public class SteadyCanvasScript : MonoBehaviour
             textStart.text = "Press 'A' Button\nto Start";
             textControls.enabled = false;
         }
+    }
 
-        bool chooseLvl = (gameType == 3);
-        dropDown_startLvl.gameObject.SetActive(chooseLvl);
-        textStartLvl.enabled = chooseLvl;
-        dropDown_startLvl.value = Settings.startLevel;
+    public void ResetCanvasLayout()
+    {
+        dropDown_gameTask.value = 0;
+        ShowLvl(dropDown_startLvl);
+
     }
 
 }
