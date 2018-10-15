@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.IO;
 
 public class EyetrackLogline
 {
@@ -91,6 +90,7 @@ public class Log : MonoBehaviour
     public void LogExpHeader()
     {
         game.writer.WriteLine("Meta-Two build\t" + System.IO.File.GetLastWriteTime(System.Reflection.Assembly.GetExecutingAssembly().Location));
+        game.writer.WriteLine("Exp. Start Time\t" + Settings.expStartTime.ToString("yyyy-MM-dd_HH-mm-ss"));
         game.writer.WriteLine("Game Start\t" + System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
         long tick;
         QueryPerformanceCounter(out tick);
@@ -99,7 +99,8 @@ public class Log : MonoBehaviour
         game.writer.WriteLine("CPU Tick Frequency\t" + tick);
         game.writer.WriteLine("SID\t" + Settings.subjectID);
         game.writer.WriteLine("ECID\t" + Settings.ECID);
-        game.writer.WriteLine("GameTask\t" + Settings.gameType);
+        game.writer.WriteLine("GameType\t" + Settings.gameType);
+        game.writer.WriteLine("GameTask\t" + Settings.gameTask);
         game.writer.WriteLine("Session\t" + Settings.session);
         game.writer.WriteLine("GameNr.\t" + Settings.gameNumber);
         game.writer.WriteLine("Input type\t" + Settings.inpt);
@@ -137,7 +138,7 @@ public class Log : MonoBehaviour
         data.Add(eventType);
         logit(Settings.subjectID, "SID");
         logit(Settings.ECID, "ECID");
-        logit(Settings.session, "session");
+        logit(Settings.session.ToString(), "session");
         logit(Settings.gameType, "game_type");
         logit(Settings.gameNumber.ToString(), "game_number");
         logit(game.episode.ToString(), "episode_number");
@@ -145,8 +146,8 @@ public class Log : MonoBehaviour
         logit(game.score.ToString(), "score");
         logit(game.lines.ToString(), "lines_cleared");
         logit(complete.ToString(), "completed");
-        logit((Time.time - Settings.startTime).ToString(), "game_duration");
-        logit(((Time.time - Settings.startTime) / (game.episode + 1)).ToString(), "avg_ep_duration");
+        logit((Time.time - Settings.gameStartTime).ToString(), "game_duration");
+        logit(((Time.time - Settings.gameStartTime) / (game.episode + 1)).ToString(), "avg_ep_duration");
         //comes in GAME_SUMM and looks like"
         // '["T", "Z", "O", "O", "T", "I", "T", "Z", "L", "I", "I", "O", "S", "Z", "T"]'
         logit("[" + string.Join(",", game.zoidBuff.ToArray()) + "]", "zoid_sequence");

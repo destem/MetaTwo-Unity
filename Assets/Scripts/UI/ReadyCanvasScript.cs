@@ -8,10 +8,8 @@ public class ReadyCanvasScript : MonoBehaviour
 {
     public GameObject uiController;
 
-    public InputField inputLevel;
     public InputField inputSID;
     public InputField inputECID;
-    public Dropdown inputGameType;
     public Dropdown inputController;
 
     UIControllerScript uiContrl;

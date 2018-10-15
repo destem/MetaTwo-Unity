@@ -11,8 +11,7 @@ public class UIControllerScript : MonoBehaviour
     public GameObject readyCanvas;
     public GameObject steadyCanvas;
     public GameObject gameCanvas;
-    public GameObject confirmCanvas;
-    public GameObject yesNoCanvas;
+    public GameObject messageCanvas;
 
     public GameObject line;
     public GameObject nextLine;
@@ -22,8 +21,7 @@ public class UIControllerScript : MonoBehaviour
 
     Game gameScript;
     SteadyCanvasScript steadyScript;
-    ConfirmCanvasScript confirmScript;
-    YesNoCanvasScript yesNoScript;
+    MessageCanvasScript messageScript;
     EyeTrackerScript eyeScript;
 
     static readonly string eyeTracker_connected = "Successfully connected to EyeTracking Device.";
@@ -37,9 +35,8 @@ public class UIControllerScript : MonoBehaviour
     {
         gameScript = game.GetComponent<Game>();
         steadyScript = steadyCanvas.GetComponent<SteadyCanvasScript>();
-        confirmScript = confirmCanvas.GetComponent<ConfirmCanvasScript>();
+        messageScript = messageCanvas.GetComponent<MessageCanvasScript>();
         eyeScript = eyeTracker.GetComponent<EyeTrackerScript>();
-        yesNoScript = yesNoCanvas.GetComponent<YesNoCanvasScript>();
 
         string path;
         // on mac/windows builds, log folder is created besides the .exe / .app
@@ -70,17 +67,19 @@ public class UIControllerScript : MonoBehaviour
     {
         string msg;
 
-        if (eyeScript.Connect())
+        try
         {
+            eyeScript.Connect();
             msg = eyeTracker_connected;
         }
-        else
+        catch (System.Net.Sockets.SocketException e)
         {
             msg = eyeTracker_noConnection;
+            eyeTracker.SetActive(false);
         }
 
-        GoTo(confirmCanvas);
-        confirmScript.NewMessage(msg, readyCanvas);
+        GoTo(messageCanvas);
+        messageScript.NewMessage(msg, readyCanvas);
     }
 
 
@@ -93,14 +92,22 @@ public class UIControllerScript : MonoBehaviour
 
             Settings.inpt = (InputType)inType;
 
+            Settings.expStartTime = System.DateTime.Now;
+            Settings.subjectDir = Settings.logDir + "/" + Settings.expStartTime.ToString("yyMMdd-HHmmss_") + Settings.subjectID;
+            Directory.CreateDirectory(Settings.subjectDir);
+
+            Settings.gameNumber = 1;
+
             GoTo(steadyCanvas);
             steadyScript.ResetCanvasLayout();
             steadyScript.AdjustInput(Settings.inpt);
 
 
-            //todo:abort on error, fix it
-            eyeScript.Calibrate(true);
-            eyeScript.startNewLog();
+            if (eyeTracker.activeSelf)
+            {
+                eyeScript.Calibrate(true);
+                eyeScript.StartNewLog();
+            }
         }
     }
 
@@ -130,7 +137,17 @@ public class UIControllerScript : MonoBehaviour
 
     public void StartGame()
     {
+        //TODO: make multi-tread to prevent delay
+        eyeScript.KetchUp();
+
         steadyCanvas.SetActive(false);
+
+        if (Settings.sessionTime > 0)
+        {
+            game.GetComponent<GameTask>().StartTask();
+        }
+        Settings.gameStartTime = Time.time;
+        Settings.gameTask = steadyScript.dropDown_gameTask.options[steadyScript.dropDown_gameTask.value].text;
 
         game.SetActive(true);
         line.SetActive(true);
@@ -138,12 +155,14 @@ public class UIControllerScript : MonoBehaviour
 
         gameCanvas.SetActive(true);
 
-        if (Settings.sessionTime > 0)
-        {
-            game.GetComponent<GameTask>().StartTask();
-        }
+        //todo: make option of random seeds
+        //fixed set of randomseed
+        //int i = (Settings.randSeeds.Length + Settings.gameNumber - 1) % Settings.randSeeds.Length;
+        //Settings.randomSeed = Settings.randSeeds[i];
 
-        Settings.startTime = Time.time;
+        //random randseed, still done, for logging of initial seed
+        Settings.randomSeed = (int)Mathf.Ceil(Random.value * 10000);
+        Random.InitState(Settings.randomSeed);
 
         gameScript.Reset();
     }
@@ -151,17 +170,22 @@ public class UIControllerScript : MonoBehaviour
 
     public void FinishGame()
     {
-        GoTo(confirmCanvas);
-        confirmScript.NewMessage("Score:\n" + gameScript.score + "\n\nLines cleared:\n" + gameScript.lines,steadyCanvas);
+        GoTo(messageCanvas);
+        messageScript.NewMessage("Score:\n" + gameScript.score + "\n\nLines cleared:\n" + gameScript.lines, steadyCanvas);
 
         long tick;
         Log.QueryPerformanceCounter(out tick);
 
         //TODO: potential break of the game, if game restart too fast ... ketchup not done?
-        eyeScript.ketchUp(tick);
+        if (eyeTracker.activeSelf)
+        {
+            eyeScript.KetchUp(tick);
+        }
 
         gameScript.ClearBoard();
         game.SetActive(false);
+
+        Settings.gameNumber++;
     }
 
 
@@ -171,10 +195,18 @@ public class UIControllerScript : MonoBehaviour
     }
 
 
+    public void AskExitStudy()
+    {
+        GoTo(messageCanvas);
+        messageScript.NewMessage(confirmExit, readyCanvas, steadyCanvas, ExitStudy);
+    }
+
     public void ExitStudy()
     {
-        GoTo(yesNoCanvas);
-        yesNoScript.setMsg(confirmExit);
+        if (eyeTracker.activeSelf)
+        {
+            eyeScript.FinishLog();
+        }
     }
 
 
@@ -183,8 +215,7 @@ public class UIControllerScript : MonoBehaviour
         readyCanvas.SetActive(false);
         steadyCanvas.SetActive(false);
         gameCanvas.SetActive(false);
-        yesNoCanvas.SetActive(false);
-        confirmCanvas.SetActive(false);
+        messageCanvas.SetActive(false);
 
         line.SetActive(false);
         nextLine.SetActive(false);

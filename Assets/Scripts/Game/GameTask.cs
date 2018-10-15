@@ -30,7 +30,7 @@ public class GameTask : MonoBehaviour
     {
         if (active && Settings.sessionTime > 0)
         {
-            if (Settings.sessionTime < Time.time - Settings.startTime)
+            if (Settings.sessionTime < Time.time - Settings.gameStartTime)
             {
                 game.GameOver();
                 active = false;

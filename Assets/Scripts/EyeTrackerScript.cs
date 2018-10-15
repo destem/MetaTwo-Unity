@@ -96,10 +96,15 @@ public class EyeTrackerScript : MonoBehaviour
     }
 
 
+    public void KetchUp()
+    {
+        long tick;
+        Log.QueryPerformanceCounter(out tick);
+        KetchUp(tick);
+    }
 
-    // TcpClient.ReceiveBufferSize property
 
-    public void ketchUp(long tick)
+    public void KetchUp(long tick)
     {
         if (eyeDataWriter != null)
         {
@@ -107,18 +112,21 @@ public class EyeTrackerScript : MonoBehaviour
 
             long gameTick = 0;
 
+            int lines = 0;
+            //todo: more elegant
             while (gazeStream.DataAvailable && gameTick < tick && gazeReader != null && gazeStream != null)
             {
-                Debug.Log("has sumthin");
                 gameTick = logNextLine();
+                lines++;
             }
             eyeDataWriter.Flush();
 
+            Debug.Log(lines + " ketchUped");
             finishing = false;
         }
     }
 
-    public void startNewLog()
+    public void StartNewLog()
     {
         if (gazeSocket != null)
         {
@@ -126,7 +134,7 @@ public class EyeTrackerScript : MonoBehaviour
 
             //gazeReader.Read(buffer, 0, buffer.Length);
 
-            eyeDataWriter = new StreamWriter(Settings.logDir + "/" + fileRootName + "_eye.tsv", true);
+            eyeDataWriter = new StreamWriter(Settings.subjectDir + "/" + fileRootName + "_eye.tsv", true);
             eyeDataWriter.WriteLine(string.Join("\t", eyeHeader));
 
             gazeWriter.Write(GazeMsg.tickfrequency_get);
@@ -137,52 +145,51 @@ public class EyeTrackerScript : MonoBehaviour
 
             long tick;
             Log.QueryPerformanceCounter(out tick);
-            ketchUp(tick);
+            KetchUp(tick);
         }
     }
 
-
-    public bool Connect()
+    public void FinishLog()
     {
-        try
+        gazeWriter.Write(GazeMsg.data_halt);
+        KetchUp();
+       // eyeDataWriter.Close();
+
+    }
+
+
+    public void Connect()
+    {
+        gazeSocket = new TcpClient("127.0.0.1", 4242);
+        if (gazeSocket != null)
         {
-            gazeSocket = new TcpClient("127.0.0.1", 4242);
-            if (gazeSocket != null)
-            {
-                //buffer size in bytes set for 40mb 
-                gazeSocket.ReceiveBufferSize = 40000000;
-                gazeStream = gazeSocket.GetStream();
-                gazeWriter = new StreamWriter(gazeStream);
+            //buffer size in bytes set for 40mb 
+            gazeSocket.ReceiveBufferSize = 40000000;
+            gazeStream = gazeSocket.GetStream();
+            gazeWriter = new StreamWriter(gazeStream);
 
-                gazeReader = new StreamReader(gazeStream);
+            gazeReader = new StreamReader(gazeStream);
 
-                gazeWriter.Write(GazeMsg.enable_time);
-                gazeWriter.Write(GazeMsg.enable_tick);
-                gazeWriter.Write(GazeMsg.enable_pogFix);
-                gazeWriter.Write(GazeMsg.enable_pogBest);
+            gazeWriter.Write(GazeMsg.enable_time);
+            gazeWriter.Write(GazeMsg.enable_tick);
+            gazeWriter.Write(GazeMsg.enable_pogFix);
+            gazeWriter.Write(GazeMsg.enable_pogBest);
 
-                gazeWriter.Write(GazeMsg.enable_pogRight);
-                gazeWriter.Write(GazeMsg.enable_pogLeft);
-                gazeWriter.Write(GazeMsg.enable_pupilLeft);
-                gazeWriter.Write(GazeMsg.enable_pupilRight);
-                gazeWriter.Write(GazeMsg.enable_eyeLeft);
-                gazeWriter.Write(GazeMsg.enable_eyeRight);
-                gazeWriter.Write(GazeMsg.data_halt);
-                gazeWriter.Flush();
+            gazeWriter.Write(GazeMsg.enable_pogRight);
+            gazeWriter.Write(GazeMsg.enable_pogLeft);
+            gazeWriter.Write(GazeMsg.enable_pupilLeft);
+            gazeWriter.Write(GazeMsg.enable_pupilRight);
+            gazeWriter.Write(GazeMsg.enable_eyeLeft);
+            gazeWriter.Write(GazeMsg.enable_eyeRight);
+            gazeWriter.Write(GazeMsg.data_halt);
+            gazeWriter.Flush();
 
-                return true;
-                //this clears the buffer. Use with caution as fragments of half-written xlm message will still arive,
-                // if stream has not been halter prior to the clearance
-                //eyeReader.Read(buffer, 0, buffer.Length);
-            }
-            else
-            {
-                return false;
-            }
-        }catch ( SocketException e)
-        {
-            return false;
+            //this clears the buffer. Use with caution as fragments of half-written xlm message will still arive,
+            // if stream has not been halter prior to the clearance
+            //eyeReader.Read(buffer, 0, buffer.Length);
         }
+
+
     }
 
 

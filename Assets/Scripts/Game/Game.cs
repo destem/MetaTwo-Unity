@@ -107,6 +107,8 @@ public class Game : MonoBehaviour
     private void Awake()
     {
         Application.targetFrameRate = 60;
+
+        //TODO: ask Marc
         // either seed with fixed num from settings or the first four digits after the decimal point of the current time
         Random.InitState(Settings.randomSeed > 0 ? Settings.randomSeed : (int)((Time.time - (int)Time.time) * 1000));
         softdrop_timer = -GRAVITY_START_DELAY;
@@ -186,7 +188,7 @@ public class Game : MonoBehaviour
     public void Reset()
     {
         System.DateTime timestamp = System.DateTime.Now;
-        writer = new StreamWriter(Settings.logDir + "/"
+        writer = new StreamWriter(Settings.subjectDir + "/"
                    + string.Format("{0}_{1}", Settings.subjectID, timestamp.ToString("yyyy-MM-dd_HH-mm-ss")) + "_game.tsv", true);
         log.LogExpHeader();
         writer.WriteLine(log.logHeader);
