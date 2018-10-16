@@ -63,140 +63,72 @@ public class EyeTrackerScript : MonoBehaviour
     StreamReader gazeReader;
     StreamWriter gazeWriter;
     StreamWriter eyeDataWriter;
-    bool evenFrame = false;
 
     string[] eyeHeader = { "eye_tracker_time", "eye_time_tick", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY", "BPOGV" };
 
     char[] buffer = new char[4096];
-
-    bool finishing = false;
 
 
 
     // Update is called once per frame
     void Update()
     {
-        if (gazeStream != null && gazeStream.DataAvailable && eyeDataWriter != null && !finishing)
+        if ( this.IsConnected() && this.HasActiveLog())
         {
-            //Assumption: Gazepoint is running @150Hz, game @60Hz
-            // --> 1000ms / 150Hz * 5 == 1000ms / 60 Hz * 2
-            // ==> collect  5 eyedata lines every 2 frames
-
-            logNextLine();
-            logNextLine();
-
-            if (evenFrame)
-            {
-                logNextLine();
-            }
-
-            evenFrame = !evenFrame;
-        }
-        //TODO: if game  not initialized, periodically clear buffer, to prevent big chunk of data?
-    }
-
-
-    public void KetchUp()
-    {
-        long tick;
-        Log.QueryPerformanceCounter(out tick);
-        KetchUp(tick);
-    }
-
-
-    public void KetchUp(long tick)
-    {
-        if (eyeDataWriter != null)
-        {
-            finishing = true;
-
-            long gameTick = 0;
-
             int lines = 0;
-            //todo: more elegant
-            while (gazeStream.DataAvailable && gameTick < tick && gazeReader != null && gazeStream != null)
+
+            while (gazeStream.DataAvailable)
             {
-                gameTick = logNextLine();
+                LogNextLine();
                 lines++;
             }
             eyeDataWriter.Flush();
 
-            Debug.Log(lines + " ketchUped");
-            finishing = false;
+            Debug.Log(lines + "eyeLines this frame.");
         }
     }
 
-    public void StartNewLog()
-    {
-        if (gazeSocket != null)
-        {
-            string fileRootName = string.Format("{0}_{1}", Settings.subjectID, System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
 
-            //gazeReader.Read(buffer, 0, buffer.Length);
-
-            eyeDataWriter = new StreamWriter(Settings.subjectDir + "/" + fileRootName + "_eye.tsv", true);
-            eyeDataWriter.WriteLine(string.Join("\t", eyeHeader));
-
-            gazeWriter.Write(GazeMsg.tickfrequency_get);
-            gazeWriter.Write(GazeMsg.calibration_getPts);
-            gazeWriter.Write(GazeMsg.data_send);
-
-            gazeWriter.Flush();
-
-            long tick;
-            Log.QueryPerformanceCounter(out tick);
-            KetchUp(tick);
-        }
-    }
-
-    public void FinishLog()
-    {
-        gazeWriter.Write(GazeMsg.data_halt);
-        KetchUp();
-       // eyeDataWriter.Close();
-
-    }
-
-
+ 
     public void Connect()
     {
-        gazeSocket = new TcpClient("127.0.0.1", 4242);
-        if (gazeSocket != null)
+        gazeSocket = new TcpClient("127.0.0.1", 4242)
         {
-            //buffer size in bytes set for 40mb 
-            gazeSocket.ReceiveBufferSize = 40000000;
-            gazeStream = gazeSocket.GetStream();
-            gazeWriter = new StreamWriter(gazeStream);
+            //buffer size (bytes) set for 40mb 
+            ReceiveBufferSize = 40000000
+        };
 
-            gazeReader = new StreamReader(gazeStream);
+        gazeStream = gazeSocket.GetStream();
+        gazeWriter = new StreamWriter(gazeStream);
+        gazeReader = new StreamReader(gazeStream);
 
-            gazeWriter.Write(GazeMsg.enable_time);
-            gazeWriter.Write(GazeMsg.enable_tick);
-            gazeWriter.Write(GazeMsg.enable_pogFix);
-            gazeWriter.Write(GazeMsg.enable_pogBest);
+        gazeWriter.Write(GazeMsg.enable_time);
+        gazeWriter.Write(GazeMsg.enable_tick);
+        gazeWriter.Write(GazeMsg.enable_pogFix);
+        gazeWriter.Write(GazeMsg.enable_pogBest);
+        gazeWriter.Write(GazeMsg.enable_pogRight);
+        gazeWriter.Write(GazeMsg.enable_pogLeft);
+        gazeWriter.Write(GazeMsg.enable_pupilLeft);
+        gazeWriter.Write(GazeMsg.enable_pupilRight);
+        gazeWriter.Write(GazeMsg.enable_eyeLeft);
+        gazeWriter.Write(GazeMsg.enable_eyeRight);
+        gazeWriter.Write(GazeMsg.data_halt);
+        gazeWriter.Flush();
 
-            gazeWriter.Write(GazeMsg.enable_pogRight);
-            gazeWriter.Write(GazeMsg.enable_pogLeft);
-            gazeWriter.Write(GazeMsg.enable_pupilLeft);
-            gazeWriter.Write(GazeMsg.enable_pupilRight);
-            gazeWriter.Write(GazeMsg.enable_eyeLeft);
-            gazeWriter.Write(GazeMsg.enable_eyeRight);
-            gazeWriter.Write(GazeMsg.data_halt);
-            gazeWriter.Flush();
-
-            //this clears the buffer. Use with caution as fragments of half-written xlm message will still arive,
-            // if stream has not been halter prior to the clearance
-            //eyeReader.Read(buffer, 0, buffer.Length);
-        }
-
-
+        //this clears the buffer. Use with caution as fragments of half-written xlm message will still arive,
+        // if stream has not been halter prior to the clearance
+        //eyeReader.Read(buffer, 0, buffer.Length);
     }
 
+
+    public bool IsConnected()
+    {
+        return gazeSocket != null;
+    }
 
 
     public void Calibrate(bool manualSetup)
     {
-
         if (manualSetup)
         {
             // Manual Calibration
@@ -218,35 +150,70 @@ public class EyeTrackerScript : MonoBehaviour
     }
 
 
-
-    long logNextLine()
+    public void StartNewLog()
     {
-        long result = -1;
+        if (gazeSocket != null)
+        {
+            string fileRootName = string.Format("{0}_{1}", Settings.subjectID, System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
+            eyeDataWriter = new StreamWriter(Settings.subjectDir + "/" + fileRootName + "_eye.tsv", true);
+            eyeDataWriter.WriteLine("Meta-Two build\t" + System.IO.File.GetLastWriteTime(System.Reflection.Assembly.GetExecutingAssembly().Location));
+            eyeDataWriter.WriteLine("Exp. Start Time\t" + Settings.expStartTime.ToString("yyyy-MM-dd_HH-mm-ss"));
+            eyeDataWriter.WriteLine("SID\t" + Settings.subjectID);
+            eyeDataWriter.WriteLine("ECID\t" + Settings.ECID);
+            eyeDataWriter.WriteLine("Session\t" + Settings.session);
+            eyeDataWriter.WriteLine("Screen resolution\t" + Screen.currentResolution);
+            eyeDataWriter.WriteLine("Screen dpi\t" + Screen.dpi);
+            eyeDataWriter.WriteLine("Fullscreen\t" + Screen.fullScreen);
+            eyeDataWriter.WriteLine("Window height\t" + Screen.height);
+            eyeDataWriter.WriteLine("Window width\t" + Screen.width);
+            eyeDataWriter.WriteLine(string.Join("\t", eyeHeader));
 
-        string eyeLine = gazeReader.ReadLine();
+            // clears up buffer from previous loggings
+            gazeReader.Read(buffer, 0, buffer.Length);
+
+            gazeWriter.Write(GazeMsg.tickfrequency_get);
+            gazeWriter.Write(GazeMsg.calibration_getPts);
+            gazeWriter.Write(GazeMsg.data_send);
+            gazeWriter.Flush();
+        }
+    }
+
+
+    public bool HasActiveLog()
+    {
+        return this.eyeDataWriter != null;
+    }
+
+
+    void LogNextLine()
+    {
+            string eyeLine = gazeReader.ReadLine();
+
 
         //if it is a data-line...
+        //TODO: this condition is impossible, implement converting lines into array 
         if (eyeLine.StartsWith("<REC TIME") && eyeLine == null)
-        {
-            char[] separatingChars = { ' ', '=', '"' };
-            //...spilt it...
-            string[] splitEyeLine = eyeLine.Split(separatingChars); ;
-
-
-            //TODO: implement this more elegant way
-            foreach (string eyeFragment in splitEyeLine)
             {
-                switch (eyeFragment)
+                Debug.Log("impossibrulity!");
+                char[] separatingChars = { ' ', '=', '"' };
+                //...spilt it...
+                string[] splitEyeLine = eyeLine.Split(separatingChars); ;
+
+
+                //TODO: implement this more elegant way
+                foreach (string eyeFragment in splitEyeLine)
                 {
+                    switch (eyeFragment)
+                    {
 
-                    case "TIME":
-                        //eyeString.add(eye.GetEnumerator().Current+2);
-                        break;
+                        case "TIME":
+                            //eyeString.add(eye.GetEnumerator().Current+2);
+                            break;
+                    }
                 }
-            }
 
-            //..and extract the relevant cells
-            string[] relevantData = {
+                //..and extract the relevant cells
+                string[] relevantData = {
                 splitEyeLine[3],
                 splitEyeLine[7],
                 splitEyeLine[11],
@@ -271,22 +238,26 @@ public class EyeTrackerScript : MonoBehaviour
             //eyetrackingLogline.BPOGY = eye[39];
             //eyetrackingLogline.BPOGV = eye[43];k
             };
-            result = long.Parse(splitEyeLine[7]);
 
-            eyeDataWriter.WriteLine(string.Join("\t", relevantData));
-        }
-        else
-        {
-            //... just write is as the raw string
-            eyeDataWriter.WriteLine(eyeLine);
-        }
-
-        return result;
+                eyeDataWriter.WriteLine(string.Join("\t", relevantData));
+            }
+            else
+            {
+                //... just write is as the raw string
+                eyeDataWriter.WriteLine(eyeLine);
+                eyeDataWriter.Flush();
+            }
     }
 
-    bool connected()
+
+    public void FinishLog()
     {
-        return gazeSocket != null;
+        gazeWriter.Write(GazeMsg.data_halt);
+        gazeWriter.Flush();
+
+        eyeDataWriter.Flush();
+        eyeDataWriter.Close();
+        eyeDataWriter = null;
     }
 
 }

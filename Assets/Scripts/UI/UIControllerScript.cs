@@ -103,7 +103,7 @@ public class UIControllerScript : MonoBehaviour
             steadyScript.AdjustInput(Settings.inpt);
 
 
-            if (eyeTracker.activeSelf)
+            if (eyeTracker.activeSelf && eyeScript.IsConnected())
             {
                 eyeScript.Calibrate(true);
                 eyeScript.StartNewLog();
@@ -137,9 +137,6 @@ public class UIControllerScript : MonoBehaviour
 
     public void StartGame()
     {
-        //TODO: make multi-tread to prevent delay
-        eyeScript.KetchUp();
-
         steadyCanvas.SetActive(false);
 
         if (Settings.sessionTime > 0)
@@ -176,12 +173,6 @@ public class UIControllerScript : MonoBehaviour
         long tick;
         Log.QueryPerformanceCounter(out tick);
 
-        //TODO: potential break of the game, if game restart too fast ... ketchup not done?
-        if (eyeTracker.activeSelf)
-        {
-            eyeScript.KetchUp(tick);
-        }
-
         gameScript.ClearBoard();
         game.SetActive(false);
 
@@ -203,7 +194,7 @@ public class UIControllerScript : MonoBehaviour
 
     public void ExitStudy()
     {
-        if (eyeTracker.activeSelf)
+        if (eyeTracker.activeSelf && eyeScript.HasActiveLog())
         {
             eyeScript.FinishLog();
         }
