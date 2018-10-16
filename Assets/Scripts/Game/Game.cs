@@ -297,16 +297,15 @@ public class Game : MonoBehaviour
         //{
         //    // invertris? lines don't quite work perfectly
         //    //todo: when switching back, the lines are off
-
         //    inverted = true;
         //    transform.localScale = new Vector3(1f, -1f, 1f);
-        //    transform.position = new Vector3(0f, 0.06f, 0f);
+        //    transform.position = new Vector3(-0.6f, 0.03f, 0f);
         //}
         //else if (JustPressed(keyEnum.Invert) && (inverted))
         //{
         //    inverted = false;
         //    transform.localScale = Vector3.one;
-        //    transform.position = Vector3.zero;
+        //    transform.position = new Vector3(-0.592f, 0.0261f, -11.66f);
         //}
 
         if (alive && !paused)
