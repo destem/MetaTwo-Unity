@@ -330,7 +330,8 @@ public class Game : MonoBehaviour
             if (JustPressed(key))
             {
                 log.LogEvent("PLAYER", "KEY_DOWN", key.ToString());
-            } else if (JustReleased(key))
+            }
+            else if (JustReleased(key))
             {
                 log.LogEvent("PLAYER", "KEY_UP", key.ToString());
             }
@@ -833,7 +834,7 @@ public class Game : MonoBehaviour
                 //{
                 //    if (Input.GetKey("joystick button " + i.ToString())) print("button " + i.ToString());
                 //}
-                //print("H " + Input.GetAxis("Horizontal").ToString());
+                //    print("H " + Input.GetAxis("Horizontal").ToString());
 
                 leftCurr = Input.GetAxis("Horizontal") == -1; // Input.GetKey("joystick button 5");
                 rightCurr = Input.GetAxis("Horizontal") == 1; // Input.GetKey("joystick button 6");

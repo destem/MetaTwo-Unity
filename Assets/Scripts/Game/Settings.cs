@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum InputType { keyboard, converted, retropad };
+public enum InputType { converted, keyboard, retropad };
 
 
 public static class Settings

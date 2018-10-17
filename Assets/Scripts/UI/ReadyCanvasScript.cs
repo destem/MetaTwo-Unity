@@ -35,5 +35,8 @@ public class ReadyCanvasScript : MonoBehaviour
         uiContrl.BeginExperiment(inputSID.text, inputECID.text,inputController.value);
     }
 
-
+    public void Reset()
+    {
+        this.inputSID.text = "";
+    }
 }

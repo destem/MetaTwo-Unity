@@ -20,6 +20,8 @@ public class UIControllerScript : MonoBehaviour
     public GameObject eyeTracker;
 
     Game gameScript;
+
+    ReadyCanvasScript readyScript;
     SteadyCanvasScript steadyScript;
     MessageCanvasScript messageScript;
     EyeTrackerScript eyeScript;
@@ -34,6 +36,8 @@ public class UIControllerScript : MonoBehaviour
     void Awake()
     {
         gameScript = game.GetComponent<Game>();
+
+        readyScript = readyCanvas.GetComponent<ReadyCanvasScript>();
         steadyScript = steadyCanvas.GetComponent<SteadyCanvasScript>();
         messageScript = messageCanvas.GetComponent<MessageCanvasScript>();
         eyeScript = eyeTracker.GetComponent<EyeTrackerScript>();
@@ -197,6 +201,7 @@ public class UIControllerScript : MonoBehaviour
         if (eyeTracker.activeSelf && eyeScript.HasActiveLog())
         {
             eyeScript.FinishLog();
+            readyScript.Reset();
         }
     }
 
