@@ -64,10 +64,17 @@ public class EyeTrackerScript : MonoBehaviour
     StreamWriter gazeWriter;
     StreamWriter eyeDataWriter;
 
+    public GameObject UiController;
+    UIControllerScript uiContrl;
+
     string[] eyeHeader = { "eye_tracker_time", "eye_time_tick", "FPOGX", "FPOGY", "FPOGS", "FPOGD", "FPOGID", "FPOGV", "BPOGX", "BPOGY", "BPOGV" };
 
     char[] buffer = new char[4096];
 
+    void Awake()
+    {
+        uiContrl = UiController.GetComponent<UIControllerScript>();
+    }
 
 
     // Update is called once per frame
@@ -187,12 +194,16 @@ public class EyeTrackerScript : MonoBehaviour
 
     void LogNextLine()
     {
+
+        try
+        {
+
             string eyeLine = gazeReader.ReadLine();
 
 
-        //if it is a data-line...
-        //TODO: this condition is impossible, implement converting lines into array 
-        if (eyeLine.StartsWith("<REC TIME") && eyeLine == null)
+            //if it is a data-line...
+            //TODO: this condition is impossible, implement converting lines into array 
+            if (eyeLine.StartsWith("<REC TIME") && eyeLine == null)
             {
                 Debug.Log("impossibrulity!");
                 char[] separatingChars = { ' ', '=', '"' };
@@ -247,6 +258,10 @@ public class EyeTrackerScript : MonoBehaviour
                 eyeDataWriter.WriteLine(eyeLine);
                 eyeDataWriter.Flush();
             }
+        } catch (IOException e)
+        {
+            
+        }
     }
 
 

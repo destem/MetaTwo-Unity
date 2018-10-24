@@ -26,12 +26,13 @@ public class UIControllerScript : MonoBehaviour
     MessageCanvasScript messageScript;
     EyeTrackerScript eyeScript;
 
-    static readonly string eyeTracker_connected = "Successfully connected to EyeTracking Device.";
-    static readonly string eyeTracker_noConnection = "EyeTracking Device not found. If you intend to collect eye-data," +
+    static readonly string eyeTracker_connected = "Successfully connected to GazePoint Control.";
+    static readonly string eyeTracker_noConnection = "GazePoint Control not found. If you intend to collect eye-data," +
                                                         " open GazePoint Control Center and restart Meta Two.";
 
     static readonly string confirmExit = "Exit Study?";
 
+    GameObject activeCanvas;
 
     void Awake()
     {
@@ -112,6 +113,10 @@ public class UIControllerScript : MonoBehaviour
                 eyeScript.Calibrate(true);
                 eyeScript.StartNewLog();
             }
+        }
+        else
+        {
+            ShowOkMessage("Subject ID and ECID must be set before you can proceed.");
         }
     }
 
@@ -217,5 +222,14 @@ public class UIControllerScript : MonoBehaviour
         nextLine.SetActive(false);
 
         to.SetActive(true);
+
+        this.activeCanvas = to;
+    }
+
+    public void ShowOkMessage(string msg)
+    {
+        GameObject returnTo = this.activeCanvas;
+        GoTo(messageCanvas);
+        messageScript.NewMessage(msg, returnTo);
     }
 }
